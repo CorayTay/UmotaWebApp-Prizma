@@ -181,6 +181,7 @@
     private string fisNoFieldName = "fisno";
     private string listPage = "siparis_liste";
     private string _DovizKuruState = "Döviz Kuru";
+    private string DovizKurTuru = "1";
 
     public async Task ValidSubmit()
     {
@@ -253,8 +254,7 @@
             mainFormModel = await mainDataHelper.SaveRecord(mainFormModel);
 
             Snackbar.Add("Sipariş oluşturuldu", severity: Severity.Success);
-            navigation.NavigateTo("/" + listPage);
-            // navigation.NavigateTo("/siparisdetay_ekle/" + mainFormModel.logref);
+            navigation.NavigateTo("/siparis_detay_ekle/" + mainFormModel.logref);
         }
         catch (Exception ex)
         {
@@ -300,12 +300,12 @@
     {
         IsUpdate = this.logRef.HasValue;
 
+        await LoadSelectBoxdata();
+
         if (IsUpdate)
             await LoadRecord();
         else
             await NewRecord();
-
-        await LoadSelectBoxdata();
     }
 
     private async Task LoadRecord()
@@ -318,11 +318,28 @@
 
     private async Task NewRecord()
     {
-        await FisNoAl();
         var selectedFirmaDonem = await LocalStorageService.GetItemAsync<SisFirmaDonemDto>(Consts.FirmaDonem);
         if (selectedFirmaDonem == null)
             throw new Exception("Firma dönem seçilmedi");
         mainFormModel.LgFirmaNo = selectedFirmaDonem.firma_no.Value;
+
+        await FisNoAl();
+
+        var doviz = DovizList.FirstOrDefault(x => x.Kodu == "TL");
+        if (doviz != null)
+            mainFormModel.DovizRefID = doviz.SabitDetayId;
+        DovizKurTuru = await sabitHelper.GetParamVal(Consts.PARAM_SATINALMA_SIPDOVIZKURTURU);
+        mainFormModel.DovizKurTurID = Convert.ToByte(DovizKurTuru);
+        mainFormModel.DovizKuruID = 1;
+
+        List<SisSabitlerDetayDto> DurumList = await sabitHelper.GetSabitDetay(SabitHelper.SabitTurler.SiparisDurumu);
+        var durum = DurumList.FirstOrDefault(x => x.Kodu == "DF");
+        if (durum != null)
+        {
+            mainFormModel.DurumRef = durum.SabitDetayId;
+            mainFormModel.DurumiKodu = durum.Ikodu;
+            mainFormModel.DurumAdi = durum.Adi;
+        }
     }
 
     private async Task FisNoAl()

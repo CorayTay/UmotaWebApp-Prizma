@@ -1,0 +1,410 @@
+﻿@page "/siparis_detay/{sipRef:int}"
+@using System
+@using System.IO
+
+@if (loadingCompleted == false)
+{
+    <MudProgressLinear Color="Color.Primary" Striped="true" Size="Size.Large" Indeterminate="true" Class="my-7" />
+}
+
+<MudBreadcrumbs Items="_items"></MudBreadcrumbs>
+
+<MudTable Items="siparis" Hover="true" Breakpoint="Breakpoint.Sm" Bordered="true" Striped="true">
+    <HeaderContent>
+        <MudTh>Proje Adı</MudTh>
+        <MudTh>Sipariş No</MudTh>
+        <MudTh>Sipariş Tarihi</MudTh>
+        <MudTh>Tedarikçi</MudTh>
+        <MudTh>Durum</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Proje Adı">@context.ProjeAdi</MudTd>
+        <MudTd DataLabel="Sipariş No">@context.FisNo</MudTd>
+        <MudTd DataLabel="Sipariş Tarihi">@context.Tarih.Value.ToString("dd.MM.yyyy")</MudTd>
+        <MudTd DataLabel="Tedarikçi">@context.CariAdi</MudTd>
+        <MudTd DataLabel="Durum">@context.DurumAdi</MudTd>
+    </RowTemplate>
+</MudTable>
+
+<MudTabs Outlined="true" Position="Position.Top" Rounded="true" Border="true"
+         ApplyEffectsToContainer="true" Class="mt-8" PanelClass="pa-6">
+    <MudTabPanel Text="Sipariş Detayları">
+        <MudTable Items="siparisDetays" Hover="true" Breakpoint="Breakpoint.Sm" Bordered="true" Striped="true" Filter="new Func<V041_SiparisDetay,bool>(FilterFunc1)">
+
+            <ToolBarContent>
+                @if (menuYetkiDto.Insert)
+                {
+                    <MudIconButton Icon="@Icons.Material.Filled.NoteAdd" OnClick="YeniDetay" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Medium" Title="Yeni Kayıt Ekle" />
+                } &nbsp; &nbsp; &nbsp;
+                <MudText Typo="Typo.h6">Sipariş Satırları</MudText>
+                <MudSpacer />
+                <MudTextField @bind-Value="_searchString" Placeholder="Satırlarda Ara" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+            </ToolBarContent>
+
+            <HeaderContent>
+                <MudTh>#</MudTh>
+                <MudTh>Aktivite 1</MudTh>
+                <MudTh>Aktivite 2</MudTh>
+                <MudTh>Aktivite 3</MudTh>
+                <MudTh>Kaynak Kodu</MudTh>
+                <MudTh>Kaynak Adı</MudTh>
+                <MudTh>Açıklama</MudTh>
+                <MudTh>Miktar</MudTh>
+                <MudTh>Birim</MudTh>
+                <MudTh>Fiyat</MudTh>
+                <MudTh>Döviz</MudTh>
+                <MudTh>Tutar</MudTh>
+            </HeaderContent>
+
+            <RowTemplate>
+                <MudTd>
+                    <MudMenu Icon="@Icons.Material.Filled.MoreVert" Color="Color.Primary">
+                        <MudMenuItem OnClick="(() => DetayGuncelle(context.Logref))">Güncelle</MudMenuItem>
+                    </MudMenu>
+                </MudTd>
+                <MudTd DataLabel="Aktivite 1">@context.Aktivite1adi</MudTd>
+                <MudTd DataLabel="Aktivite 2">@context.Aktivite2adi</MudTd>
+                <MudTd DataLabel="Aktivite 3">@context.Aktivite3adi</MudTd>
+                <MudTd DataLabel="Kaynak Kodu">@context.Kaynakkodu</MudTd>
+                <MudTd DataLabel="Kaynak Adı">@context.Kaynakadi</MudTd>
+                <MudTd DataLabel="Açıklama">@context.Aciklama</MudTd>
+                <MudTd DataLabel="Miktar">@context.Miktar</MudTd>
+                <MudTd DataLabel="Birim">@context.Birimadi</MudTd>
+                <MudTd DataLabel="Fiyat">@context.Fiyat</MudTd>
+                <MudTd DataLabel="Döviz">@context.FDovizKodu</MudTd>
+                <MudTd DataLabel="Tutar">@context.Tutar</MudTd>
+            </RowTemplate>
+
+        </MudTable>
+
+    </MudTabPanel>
+    <MudTabPanel Text="Onay Durumları">
+
+        <MudButtonGroup Color="Color.Primary" Variant="Variant.Outlined">
+            <MudButton>Onay</MudButton>
+            <MudMenu Icon="@Icons.Material.Filled.ArrowDropDown">
+                @if ((siparisOnays.Count == 0) && (kullanici_kodu == siparis.First().InsUser || KullaniciYetkisi_SiparisOzelOnay == true))
+                {
+                    <MudMenuItem OnClick="() => OnayaGonder()">Onaya Gönder</MudMenuItem>
+                }
+                @if ((siparisOnays.Count > 0) && (OnayLineRef > 0))
+                {
+                    <MudMenuItem OnClick="() => Onayla(Enums.OnayDurumu.Onaylandi)">Onayla</MudMenuItem>
+                    <MudMenuItem OnClick="() => Onayla(Enums.OnayDurumu.GeriGonderildi)">Geri Gönder</MudMenuItem>
+                    <MudMenuItem OnClick="() => Onayla(Enums.OnayDurumu.Iptal)">İptal</MudMenuItem>
+                }
+            </MudMenu>
+        </MudButtonGroup>
+
+        <MudTable Items="siparisOnays" Hover="true" Breakpoint="Breakpoint.Sm" Bordered="true" Striped="true" RowStyleFunc="TableRowStyleFunc">
+
+            <HeaderContent>
+                <MudTh>Onay Türü</MudTh>
+                <MudTh>Onay Durumu</MudTh>
+                <MudTh>Onay Yetkili Kullanıcılar</MudTh>
+                <MudTh>İşlemi Yapan</MudTh>
+                <MudTh>İşlem Tarihi</MudTh>
+                <MudTh>Açıklama</MudTh>
+            </HeaderContent>
+
+            <RowTemplate>
+                @* <MudTd DataLabel="Onay Türü" Style="@(@context.Active == 1 ? $"background:{Colors.Red.Lighten3};" : $"background:{Colors.LightGreen.Lighten3};")">@context.OnayTipAdi</MudTd> *@
+                <MudTd DataLabel="Onay Türü">@context.OnayTipAdi</MudTd>
+                <MudTd DataLabel="Onay Durumu">@context.OnayAdi</MudTd>
+                <MudTd DataLabel="Onay Yetkili Kullanıcılar">@context.OnayUser</MudTd>
+                <MudTd DataLabel="İşlemi Yapan">@context.upduser</MudTd>
+                <MudTd DataLabel="İşlem Tarihi">@context.upddate</MudTd>
+                <MudTd DataLabel="Açıklama">@context.Aciklama</MudTd>
+            </RowTemplate>
+
+        </MudTable>
+    </MudTabPanel>
+    <MudTabPanel Text="Dosyalar">
+
+        <div class="row">
+            <div class="col-4">
+                <div class="form-group">
+                    <label>File</label>
+                    <InputFile OnChange="OnChooseFile" />
+                </div>
+                @* Call the SubmitFileAsync in the @onclick event *@
+                <button type="submit" class="btn btn-success btn-block m-1" @onclick="SubmitFileAsync">Upload</button>
+            </div>
+        </div>
+
+        <div class="row">
+            <MudTable Items="siparisDosyalar" Hover="true" Breakpoint="Breakpoint.Sm" Bordered="true" Striped="true">
+                <HeaderContent>
+                    <MudTh>Dosya Adı</MudTh>
+                    <MudTh>#</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Dosya Adı">@context.DosyaAdi</MudTd>
+                    <MudTd>
+                        <a href="/Media/Uploads/@context.DosyaAdi" download="@context.DosyaAdi">indir</a>
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
+        </div>
+
+    </MudTabPanel>
+</MudTabs>
+
+@code {
+    [Parameter]
+    public int sipRef { get; set; }
+
+    [CascadingParameter] IModalService modal { get; set; }
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+    [CascadingParameter] ModalParameters modalParameters { get; set; }
+
+    [Inject]
+    ModalManager ModalManager { get; set; }
+
+    [Inject]
+    NavigationManager navigation { get; set; }
+
+    [Inject]
+    HttpClient httpClient { get; set; }
+
+    [Inject]
+    ISnackbar Snackbar { get; set; }
+
+    [Inject]
+    ILocalStorageService LocalStorageService { get; set; }
+
+    [Inject]
+    YetkiHelper yetkiHelper { get; set; }
+
+    [Inject]
+    SiparisHelper mainDataHelper { get; set; }
+
+    [Inject]
+    SiparisDetayHelper siparisDetayHelper { get; set; }
+
+    [Inject]
+    UploadHelper uploadHelper { get; set; }
+
+    public SiparisRequestDto siparisRequest = new();
+    public MenuYetkiDto menuYetkiDto = new MenuYetkiDto();
+    List<V040_Siparis> siparis = new();
+    List<V041_SiparisDetay> siparisDetays = new();
+    List<V042_SiparisOnay> siparisOnays = new();
+    List<SiparisDosyaDto> siparisDosyalar = new();
+
+    private string formName = "siparis_detay";
+    private bool loadingCompleted { get; set; }
+    private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
+    {
+        new BreadcrumbItem("Sipariş Listesi", href: "siparis_liste"),
+    };
+
+
+    private long _uploaded = 0;
+    private double _percentage = 0;
+    private Stream _fileStream = null;
+    private string _selectedFileName = null;
+    private string _fileType = "";
+    private IBrowserFile selectedFile;
+    private string kullanici_kodu = "";
+    private bool KullaniciYetkisi_SiparisOzelOnay = false;
+    private static int OnayLineRef = 0;
+    private string _searchString = "";
+
+    private bool FilterFunc1(V041_SiparisDetay element) => FilterFunc(element, _searchString);
+
+    private bool FilterFunc(V041_SiparisDetay element, string searchString)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (element.Aciklama != null && element.Aciklama.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (element.Kaynakadi != null && element.Kaynakadi.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (element.Aktivite3adi != null && element.Aktivite3adi.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        return false;
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            kullanici_kodu = await LocalStorageService.GetItemAsync<string>(Consts.KullaniciKodu);
+            menuYetkiDto = await yetkiHelper.GetKullaniciMenuYetkisi(this.formName);
+            KullaniciYetkisi_SiparisOzelOnay = await yetkiHelper.GetKullaniciYetkisi(kullanici_kodu, Consts.KullaniciYetkisi_SiparisOzelOnay);
+
+            await LoadFis();
+            await LoadDetayList();
+            await LoadOnayList();
+            await GetOnayLineRef();
+            await LoadDosyalar();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, severity: Severity.Warning);
+        }
+    }
+
+    private async Task LoadFis()
+    {
+        if (menuYetkiDto.View == false)
+        {
+            loadingCompleted = true;
+            throw new Exception("Bu sayfayı görme yetkiniz yok");
+        }
+
+        siparisRequest.SiparisDto = new SiparisDto() { logref = this.sipRef };
+        siparisRequest.TopRowCount = 1;
+
+        siparis = await mainDataHelper.LoadRecordsFromView(siparisRequest);
+        _items.Add(new BreadcrumbItem(string.Format("({0}) {1}", siparis.First().ProjeKodu, siparis.First().ProjeAdi), href: formName + "/" + sipRef));
+
+        loadingCompleted = true;
+    }
+
+    private async Task LoadDetayList()
+    {
+        var request = new SiparisDetayRequestDto();
+        request.SiparisDetay = new SiparisDetayDto() { Parlogref = sipRef };
+
+        siparisDetays = await siparisDetayHelper.LoadViewRecords(request);
+    }
+
+    private async Task LoadOnayList()
+    {
+        siparisOnays = await mainDataHelper.GetSiparisFisOnayListAsnyc(sipRef);
+    }
+
+    private void YeniDetay()
+    {
+        navigation.NavigateTo("/siparis_detay_ekle/" + sipRef);
+    }
+
+    private void DetayGuncelle(int talepDetayLogRef)
+    {
+        navigation.NavigateTo("/siparis_detay_ekle/" + sipRef + "/" + talepDetayLogRef.ToString());
+    }
+
+    private async Task OnayaGonder()
+    {
+        await mainDataHelper.SiparisOnayRota(this.sipRef);
+        Snackbar.Add("Onaya Gönderildi", severity: Severity.Success);
+        await LoadOnayList();
+        await GetOnayLineRef();
+    }
+
+    private async Task Onayla(Enums.OnayDurumu onaydurumu)
+    {
+        await mainDataHelper.SiparisOnayla(this.sipRef, OnayLineRef, (int)onaydurumu, "");
+        Snackbar.Add("Onaylandı", severity: Severity.Success);
+        await LoadOnayList();
+        await GetOnayLineRef();
+    }
+
+    private async Task GetOnayLineRef()
+    {
+        OnayLineRef = await mainDataHelper.SiparisGetOnayLineRef(this.sipRef);
+    }
+
+    private static string TableRowStyleFunc(V042_SiparisOnay exampleItem, int index)
+    {
+        if (exampleItem.Active == 0)
+        {
+            if (exampleItem.logref == OnayLineRef)
+            {
+                // return "background:" + Colors.Orange.Lighten3;
+                return "text-decoration-line: underline;";
+            }
+            else
+            {
+                switch (exampleItem.OnayIKodu)
+                {
+                    // case (int)Enums.OnayDurumu.Bekliyor:
+                    //     return "background:" + Colors.Yellow.Lighten3;
+                    case (int)Enums.OnayDurumu.Onaylandi:
+                        // return "background:" + Colors.Green.Lighten4;
+                        return "font-style: italic;";
+                    // case (int)Enums.OnayDurumu.Iptal:
+                    //     return "background:" + Colors.Red.Lighten3;
+                    default: return "";
+
+                }
+            }
+        }
+        else
+        {
+            //return "background:" + Colors.Grey.Lighten1;
+            return "text-decoration: line-through;";
+        }
+
+        // => exampleItem.OnayIKodu switch
+        //    {
+        //        (int)Enums.OnayDurumu.Bekliyor => "background:" + Colors.Yellow.Lighten4,
+        //        (int)Enums.OnayDurumu.Onaylandi => "background:" + Colors.Green.Lighten4,
+        //        (int)Enums.OnayDurumu.Iptal => "background:" + Colors.Red.Lighten4,
+        //        _ => string.Empty,
+        //    };
+
+    }
+
+    #region Dosya Yükleme
+
+    public void OnChooseFile(InputFileChangeEventArgs e)
+    {
+        // Get the selected file
+        var file = e.File;
+        _fileType = e.File.ContentType;
+        selectedFile = e.File;
+
+        // Check if the file is null then return from the method
+        if (file == null)
+            return;
+
+        // Validate the extension if requried (Client-Side)
+
+        // Set the value of the stream by calling OpenReadStream and pass the maximum number of bytes allowed because by default it only allows 512KB
+        // I used the value 5000000 which is about 50MB
+        using (var stream = file.OpenReadStream(50000000))
+        {
+            _fileStream = stream;
+            _selectedFileName = file.Name;
+        }
+    }
+
+
+    public async Task SubmitFileAsync()
+    {
+        FileDataDto request = new();
+        request.FileType = _fileType;
+
+        var buffers = new byte[selectedFile.Size];
+        var maxSize = 1024 * 1024 * 8; //8 Mb
+        await selectedFile.OpenReadStream(maxAllowedSize: maxSize).ReadAsync(buffers);
+
+        request.Data = buffers;
+        request.FileName = _selectedFileName;
+        request.FileType = _fileType;
+
+        var response = await uploadHelper.Upload(request);
+
+        SiparisDosyaRequestDto request2 = new();
+        request2.FileName = response.FileName;
+        request2.FileType = response.ImageType;
+        request2.SiparisLogRef = sipRef;
+
+        var resp2 = await mainDataHelper.UploadSiparisDosya(request2);
+        await LoadDosyalar();
+
+        this.StateHasChanged();
+    }
+
+    public async Task LoadDosyalar()
+    {
+        siparisDosyalar = await mainDataHelper.SiparisDosyaGetAll(sipRef);
+    }
+
+    #endregion
+}

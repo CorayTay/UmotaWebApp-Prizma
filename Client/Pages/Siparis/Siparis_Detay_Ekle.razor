@@ -1,0 +1,91 @@
+﻿@page "/siparis_detay_ekle/{sipRef:int}/{sipDetayLogRef:int?}"
+
+<HeaderSearchBar header="header" ShowSearchSection="false"></HeaderSearchBar>
+
+<MudTable Items="talepfis" Hover="true" Breakpoint="Breakpoint.Sm" Bordered="true" Striped="true">
+    <HeaderContent>
+        <MudTh>Proje Adı</MudTh>
+        <MudTh>Sipariş No</MudTh>
+        <MudTh>Sipariş Tarihi</MudTh>
+        <MudTh>Tedarikçi</MudTh>
+        <MudTh>Durum</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Proje Adı">@context.ProjeAdi</MudTd>
+        <MudTd DataLabel="Sipariş No">@context.FisNo</MudTd>
+        <MudTd DataLabel="Sipariş Tarihi">@context.Tarih.Value.ToString("dd.MM.yyyy")</MudTd>
+        <MudTd DataLabel="Tedarikçi">@context.CariAdi</MudTd>
+        <MudTd DataLabel="Durum">@context.DurumAdi</MudTd>
+    </RowTemplate>
+</MudTable>
+
+<MudDivider DividerType="DividerType.Middle" Class="my-6" />
+
+<SiparisDetayEkleGuncelleComponent OnVazgecClicked="goBackTeklifList" SiparisLogRef="this.sipRef" siparisDetayLogRef="this.sipDetayLogRef"></SiparisDetayEkleGuncelleComponent>
+
+@code {
+
+    [Parameter]
+    public int sipRef { get; set; }
+
+    [Parameter]
+    public int? sipDetayLogRef { get; set; }
+
+    [Inject]
+    NavigationManager navigation { get; set; }
+
+    public HeaderBarSearch header = new HeaderBarSearch();
+    public MenuYetkiDto menuYetkiDto = new MenuYetkiDto();
+
+    List<V040_Siparis> talepfis = new();
+
+    [Inject]
+    ISnackbar Snackbar { get; set; }
+
+    [Inject]
+    YetkiHelper yetkiHelper { get; set; }
+
+    [Inject]
+    SiparisHelper talepFisDataHelper { get; set; }
+
+    public SiparisRequestDto talepfisRequest = new();
+
+    private string formName = "siparis_detay_ekle";
+    private bool loadingCompleted { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        header.HeaderText = "Sipariş Detay Bilgileri";
+        try
+        {
+            menuYetkiDto = await yetkiHelper.GetKullaniciMenuYetkisi(this.formName);
+
+            await LoadTalepFis();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, severity: Severity.Warning);
+        }
+    }
+
+    public void goBackTeklifList()
+    {
+        navigation.NavigateTo("/siparis_detay_liste/" + this.sipRef);
+    }
+
+    private async Task LoadTalepFis()
+    {
+        if (menuYetkiDto.View == false)
+        {
+            loadingCompleted = true;
+            throw new Exception("Bu sayfayı görme yetkiniz yok");
+        }
+
+        talepfisRequest.SiparisDto = new SiparisDto() { logref = this.sipRef };
+
+        talepfis = await talepFisDataHelper.LoadRecordsFromView(talepfisRequest);
+
+        loadingCompleted = true;
+    }
+
+}

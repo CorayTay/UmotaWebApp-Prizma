@@ -5,7 +5,7 @@
         <MudProgressCircular Color="Color.Success" Indeterminate="true" />
     }
 
-    <MudTable Items="Detays" Hover="true" Breakpoint="Breakpoint.Sm" Bordered="true" Striped="true" Filter="new Func<V041_SiparisDetay,bool>(FilterFunc1)">
+    <MudTable @ref="_table" T="V041_SiparisDetay" Items="Detays" Hover="true" Breakpoint="Breakpoint.Sm" Bordered="true" Striped="true" MultiSelection="true" @bind-SelectedItems="selectedItems" Filter="new Func<V041_SiparisDetay,bool>(FilterFunc1)">
 
         <ToolBarContent>
             <MudText Typo="Typo.h6">Sipariş Satırları</MudText>
@@ -22,6 +22,11 @@
             <MudTh>Açıklama</MudTh>
             <MudTh>Miktar</MudTh>
             <MudTh>Birim</MudTh>
+            <MudTh>Fiyat</MudTh>
+            <MudTh>Döviz</MudTh>
+            <MudTh>Tutar</MudTh>
+            <MudTh>Sevk Miktar</MudTh>
+            <MudTh>Kalan Miktar</MudTh>
         </HeaderContent>
 
         <RowTemplate>
@@ -33,9 +38,33 @@
             <MudTd DataLabel="Açıklama">@context.Aciklama</MudTd>
             <MudTd DataLabel="Miktar">@context.Miktar</MudTd>
             <MudTd DataLabel="Birim">@context.Birimadi</MudTd>
+            <MudTd DataLabel="Fiyat">@context.Fiyat</MudTd>
+            <MudTd DataLabel="Döviz">@context.FDovizKodu</MudTd>
+            <MudTd DataLabel="Tutar">@context.Tutar</MudTd>
+            <MudTd DataLabel="Sevk Miktar">@context.SevkMiktar</MudTd>
+            <MudTd DataLabel="Kalan Miktar">@context.KalanMiktar</MudTd>
         </RowTemplate>
 
     </MudTable>
+
+    <MudDivider DividerType="DividerType.FullWidth" Class="my-2" />
+
+    <div class="form-group">
+        <MudButton Disabled="@_processing" OnClick="IrsaliyeOlustur" Variant="Variant.Filled" Color="Color.Primary">
+            @if (_processing)
+            {
+                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                <MudText Class="ms-2">Bekleyiniz...</MudText>
+            }
+            else
+            {
+                <MudText>İrsaliye Oluştur</MudText>
+            }
+        </MudButton>
+        <CancelButtonComponent Caption="Vazgeç" OnClick="Vazgec" />
+    </div>
+
+
 </div>
 
 @code
@@ -50,15 +79,26 @@
     HttpClient httpClient { get; set; }
 
     [Inject]
+    ISnackbar Snackbar { get; set; }
+
+    [Inject]
+    SiparisHelper SiparisHelper { get; set; }
+
+    [Inject]
     SiparisDetayHelper DetayHelper { get; set; }
 
     [Parameter]
     public int? SiparisRef { get; set; }
 
+    public SiparisDto Siparis { get; set; }
     public List<V041_SiparisDetay> Detays { get; set; }
+    private MudTable<V041_SiparisDetay> _table;
+    private HashSet<V041_SiparisDetay> selectedItems = new HashSet<V041_SiparisDetay>();
 
     private string _searchString;
     private bool loadingCompleted = true;
+    private bool _processing = false;
+
 
     private bool FilterFunc1(V041_SiparisDetay element) => FilterFunc(element, _searchString);
 
@@ -81,8 +121,14 @@
     private async Task LoadList()
     {
         loadingCompleted = false;
+
+        SiparisRequestDto Request = new SiparisRequestDto() { TopRowCount = 1 };
+        Request.SiparisDto = new SiparisDto() { logref = SiparisRef.Value };
+
+        Siparis = await SiparisHelper.LoadRecordFromView(Request);
+
         var request = new SiparisDetayRequestDto();
-        request.SiparisDetay = new V041_SiparisDetay() { Parlogref = SiparisRef };
+        request.SiparisDetay = new SiparisDetayDto() { Parlogref = SiparisRef };
         Detays = await DetayHelper.LoadViewRecords(request);
         loadingCompleted = true;
     }
@@ -94,6 +140,62 @@
 
     public async Task Vazgec()
     {
+        await ModalInstance.CloseAsync();
+
+    }
+
+    public void SubmitValidation()
+    {
+        var err = new List<string>();
+
+        if (Siparis.DurumiKodu == null || Siparis.DurumiKodu != (int)SharedEnums.SiparisDurumIKodu.Onaylandi)
+            err.Add("Sipariş onaylanmamış");
+
+        if (selectedItems.Count < 1)
+            err.Add("Hiçbir satır seçili değil");
+
+        if (err.Count > 0)
+        {
+            var ex = new ClientException("Kayıt Hatası");
+            ex.ErrorList = err;
+
+            throw ex;
+        }
+    }
+
+    public async Task IrsaliyeOlustur()
+    {
+        try
+        {
+            SubmitValidation();
+        }
+        catch (ClientException ex)
+        {
+            foreach (var item in ex.ErrorList)
+            {
+                Snackbar.Add(item, severity: Severity.Warning);
+            }
+            return;
+        }
+        catch (Exception)
+        {
+        }
+
+        if (selectedItems.Count > 0)
+        {
+            var lst = string.Join(",", selectedItems.Where(x => x.KalanMiktar > 0).OrderBy(x => x.Logref).Select(x => x.Logref));
+            if (string.IsNullOrWhiteSpace(lst))
+            {
+                Snackbar.Add("Sevk kalan miktar sıfırdan büyük olmalıdır", severity: Severity.Warning);
+                return;
+            }
+
+        } 
+        else
+        {
+            
+        }
+
         await ModalInstance.CloseAsync();
     }
 }

@@ -134,5 +134,15 @@ namespace UmotaWebApp.Client.Utils
         public const string SiparisSaveRecord = "/api/siparis/SaveRecord";
         public const string SiparisUpdateRecord = "/api/siparis/UpdateRecord";
         public const string SiparisV041SiparisDetayList = "/api/siparis/GetSiparisDetayListAsnyc";
+        public const string SiparisDetayGetir = "/api/siparis/GetSiparisDetay";
+        public const string SiparisDetayKaydet = "/api/siparis/CreateSiparisDetay";
+        public const string SiparisDetayGuncelle = "/api/siparis/UpdateSiparisDetay";
+        public const string SiparisFisOnayListeGetir = "/api/siparis/GetSiparisFisOnayListAsnyc";
+        public const string SiparisOnayRota = "/api/siparis/SiparisOnayRota";
+        public const string SiparisDurumGuncelle = "/api/siparis/SiparisDurumGuncelle";
+        public const string SiparisGetOnayLineRef = "/api/siparis/SiparisGetOnayLineRef";
+        public const string SiparisOnayla = "/api/siparis/SiparisOnayla";
+        public const string SiparisUploadDosya = "/api/siparis/UploadSiparisDosya";
+        public const string SiparisDosyaGetAll = "/api/siparis/GetSiparisDosyalar";
     }
 }

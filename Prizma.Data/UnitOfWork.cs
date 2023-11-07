@@ -23,6 +23,8 @@ namespace Prizma.Data
         private ITalepOnayRepository _taleponayRepository;
         private IKaynakRepository _kaynakRepository;
         private ITalepDosyaRepository _talepdosyaRepository;
+        private ISiparisOnayRepository _siparisonayRepository;
+        private ISiparisDosyaRepository _siparisdosyaRepository;
 
         public UnitOfWork(PrizmaDbContext context)
         {
@@ -39,6 +41,8 @@ namespace Prizma.Data
         public ITalepOnayRepository TalepOnayRepository => _taleponayRepository = _taleponayRepository ?? new TalepOnayRepository(_context);
         public IKaynakRepository KaynakRepository => _kaynakRepository = _kaynakRepository ?? new KaynakRepository(_context);
         public ITalepDosyaRepository TalepDosyaRepository => _talepdosyaRepository = _talepdosyaRepository ?? new TalepDosyaRepository(_context);
+        public ISiparisOnayRepository SiparisOnayRepository => _siparisonayRepository = _siparisonayRepository ?? new SiparisOnayRepository(_context);
+        public ISiparisDosyaRepository SiparisDosyaRepository => _siparisdosyaRepository = _siparisdosyaRepository ?? new SiparisDosyaRepository(_context);
 
         public async Task<int> CommitAsync()
         {

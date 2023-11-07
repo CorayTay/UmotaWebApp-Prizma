@@ -32,7 +32,7 @@ namespace UmotaWebApp.Server.Data.Models
         public string Ozelkod4 { get; set; }
         public string Ozelkod5 { get; set; }
         public int? Odemeplanref { get; set; }
-        public byte? Active { get; set; }
+        public short? Active { get; set; }
         public int? lgfirmano { get; set; }
     }
 }

@@ -1,0 +1,618 @@
+﻿<EditForm Model="talepDetayDTO">
+    <DataAnnotationsValidator />
+
+    @if (loadingCompleted == false)
+    {
+        <MudProgressLinear Color="Color.Primary" Striped="true" Size="Size.Large" Indeterminate="true" Class="my-7" />
+    }
+
+    <MudCard>
+        <MudCardContent>
+
+            <div class="mt-6">
+
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label>Etap</label>
+                            <InputSelect class="form-control" @bind-Value="talepDetayDTO.Mahal1ref" @bind-Value:after="LoadBolum">
+                                @if (etapList != null)
+                                {
+                                    <option value="-1">@Utils.Mesajlar.Seciniz</option>
+                                    @foreach (var item in etapList)
+                                    {
+                                        <option value="@item.Logref">@item.Adi</option>
+                                    }
+                                }
+                            </InputSelect>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label>Bölüm</label>
+                            <InputSelect class="form-control" @bind-Value="talepDetayDTO.Mahal2ref" @bind-Value:after="LoadBlok">
+                                @if (bolumList != null)
+                                {
+                                    <option value="-1">@Utils.Mesajlar.Seciniz</option>
+                                    @foreach (var item in bolumList)
+                                    {
+                                        <option value="@item.Logref">@item.Adi</option>
+                                    }
+                                }
+                            </InputSelect>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label>Blok</label>
+                            <InputSelect class="form-control" @bind-Value="talepDetayDTO.Mahal3ref" @bind-Value:after="LoadKat">
+                                @if (blokList != null)
+                                {
+                                    <option value="-1">@Utils.Mesajlar.Seciniz</option>
+                                    @foreach (var item in blokList)
+                                    {
+                                        <option value="@item.Logref">@item.Adi</option>
+                                    }
+                                }
+                            </InputSelect>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label>Kat</label>
+                            <InputSelect class="form-control" @bind-Value="talepDetayDTO.Mahal4ref">
+                                @if (katList != null)
+                                {
+                                    <option value="-1">@Utils.Mesajlar.Seciniz</option>
+                                    @foreach (var item in katList)
+                                    {
+                                        <option value="@item.Logref">@item.Adi</option>
+                                    }
+                                }
+                            </InputSelect>
+                        </div>
+                    </div>
+
+                </div>
+
+                <MudDivider DividerType="DividerType.Middle" Class="my-6" />
+
+                <div class="form-group">
+                    <div class="row">
+
+                        <div class="col-md-3">
+                            <label>Aktivite 1</label>
+                            <InputSelect class="form-control" @bind-Value="talepDetayDTO.Aktivite1ref" @bind-Value:after="LoadAktivite2">
+                                @if (aktivite1List != null)
+                                {
+                                    <option value="-1">@Utils.Mesajlar.Seciniz</option>
+                                    @foreach (var item in aktivite1List)
+                                    {
+                                        <option value="@item.Logref">@item.Kodu @item.Adi</option>
+                                    }
+                                }
+                            </InputSelect>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label>Aktivite 2</label>
+                            <InputSelect class="form-control" @bind-Value="talepDetayDTO.Aktivite2ref" @bind-Value:after="LoadAktivite3">
+                                @if (aktivite2List != null)
+                                {
+                                    <option value="-1">@Utils.Mesajlar.Seciniz</option>
+                                    @foreach (var item in aktivite2List)
+                                    {
+                                        <option value="@item.Logref">@item.Kodu @item.Adi</option>
+                                    }
+                                }
+                            </InputSelect>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label>Aktivite 3</label>
+                            <InputSelect class="form-control" @bind-Value="talepDetayDTO.Aktivite3ref" @bind-Value:after="LoadKaynak">
+                                @if (aktivite3List != null)
+                                {
+                                    <option value="-1">@Utils.Mesajlar.Seciniz</option>
+                                    @foreach (var item in aktivite3List)
+                                    {
+                                        <option value="@item.Logref">@item.Kodu @item.Adi</option>
+                                    }
+                                }
+                            </InputSelect>
+                        </div>
+
+                        <div class="col-md-3">
+
+                            <div class="row">
+                                <div class="col-md-9">
+                                    <label>Kaynak</label>
+                                    <InputSelect class="form-control" @bind-Value="talepDetayDTO.Kaynakref" @bind-Value:after="LoadBirim">
+                                        @if (kaynakList != null)
+                                        {
+                                            <option value="-1">@Utils.Mesajlar.Seciniz</option>
+                                            @foreach (var item in kaynakList)
+                                            {
+                                                <option value="@item.Logref">@item.Adi</option>
+                                            }
+                                        }
+                                    </InputSelect>
+                                </div>
+                                <div class="col-md-3">
+                                    <MudFab Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Search" Size="Size.Small" OnClick="KaynakSec" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <MudDivider DividerType="DividerType.Middle" Class="my-6" />
+
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <MudTextField @bind-Value="talepDetayDTO.Aciklama" Label="Açıklama" Lines=2 Variant="Variant.Outlined" />
+                        </div>
+                    </div>
+                </div>
+
+                <MudDivider DividerType="DividerType.Middle" Class="my-6" />
+
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label>Miktar</label>
+                            <InputNumber @bind-Value="talepDetayDTO.Miktar" class="form-control" placeholder="Miktar" />
+                        </div>
+                        <div class="col-md-3">
+                            <label>Birim</label>
+                            <InputSelect class="form-control" @bind-Value="talepDetayDTO.Birimref">
+                                @if (birimList != null)
+                                {
+                                    <option value="-1">@Utils.Mesajlar.Seciniz</option>
+                                    @foreach (var item in birimList)
+                                    {
+                                        <option value="@item.SabitDetayId">@item.Kodu</option>
+                                    }
+                                }
+                            </InputSelect>
+                        </div>
+                        <div class="col-md-3">
+                            <label>Teslim Yeri</label>
+                            <InputSelect class="form-control" @bind-Value="talepDetayDTO.Teslimyeriref">
+                                @if (teslimYeriList != null)
+                                {
+                                    <option value="-1">@Utils.Mesajlar.Seciniz</option>
+                                    @foreach (var item in teslimYeriList)
+                                    {
+                                        <option value="@item.SabitDetayId">@item.Adi</option>
+                                    }
+                                }
+                            </InputSelect>
+
+                        </div>
+
+                        <div class="col-md-3">
+                            <label>Teslim Tarihi</label>
+                            <InputDate @bind-Value="talepDetayDTO.Teslimtarihi" class="form-control" placeholder="Teslim Tarihi" />
+                        </div>
+                    </div>
+                </div>
+
+                <MudDivider DividerType="DividerType.Middle" Class="my-6" />
+
+                <div class="row">
+                </div>
+
+            </div>
+
+
+        </MudCardContent>
+        <MudCardActions>
+            <div class="form-group">
+                <MudButton Disabled="@_processing" OnClick="ValidSubmit" Variant="Variant.Filled" Color="Color.Primary">
+                    @if (_processing)
+                    {
+                        <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                        <MudText Class="ms-2">Kaydediliyor...</MudText>
+                    }
+                    else
+                    {
+                        <MudText>Kaydet</MudText>
+                    }
+                </MudButton>
+                <CancelButtonComponent Caption="Vazgeç" OnClick="Vazgec" />
+            </div>
+        </MudCardActions>
+    </MudCard>
+
+
+
+</EditForm>
+
+@code {
+
+    [CascadingParameter] IModalService modal { get; set; }
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+    [CascadingParameter] ModalParameters modalParameters { get; set; }
+
+    [Inject]
+    ISnackbar Snackbar { get; set; }
+
+    [Inject]
+    ModalManager ModalManager { get; set; }
+
+    [Inject]
+    NavigationManager navigation { get; set; }
+
+    [Inject]
+    HttpClient httpClient { get; set; }
+
+    [Inject]
+    ILocalStorageService LocalStorageService { get; set; }
+
+    [Inject]
+    YetkiHelper yetkiHelper { get; set; }
+
+    [Inject]
+    SiparisDetayHelper mainDataHelper { get; set; }
+
+    [Inject]
+    SabitHelper sabitHelper { get; set; }
+
+    [Inject]
+    AktiviteHelper aktiviteHelper { get; set; }
+
+    [Inject]
+    MahalHelper mahalHelper { get; set; }
+
+    [Inject]
+    SiparisHelper talepFisHelper { get; set; }
+
+    [Parameter]
+    public int? logRef { get; set; }
+
+    [Parameter]
+    public int SiparisLogRef { get; set; }
+
+    [Parameter]
+    public EventCallback OnVazgecClicked { get; set; }
+
+    [Parameter]
+    public int? siparisDetayLogRef { get; set; }
+
+    List<SisSabitlerDetayDto> teslimYeriList = new();
+
+    public bool IsUpdate { get; set; }
+    private bool loadingCompleted = false;
+    private bool _processing = false;
+
+    SiparisDetayDto talepDetayDTO = new SiparisDetayDto();
+    private string tableName = "siparis_detay";
+    private string listPage = "siparis_detay";
+
+
+    List<V001Aktivite> aktivite1List = new();
+    List<V001Aktivite> aktivite2List = new();
+    List<V001Aktivite> aktivite3List = new();
+    List<V002_Kaynak> kaynakList = new();
+
+    List<V005Mahal> etapList = new();
+    List<V005Mahal> bolumList = new();
+    List<V005Mahal> blokList = new();
+    List<V005Mahal> katList = new();
+
+    List<SisSabitlerDetayDto> birimList = new();
+
+    V040_Siparis talepfis = new();
+
+    public SiparisRequestDto talepfisRequest = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            loadingCompleted = true;
+            await LoadTalepFis();
+            await LoadTalepDetayData();
+
+            await LoadSelectBoxdata();
+            await LoadEtap();
+
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, severity: Severity.Error);
+        }
+
+    }
+
+    public async Task ValidSubmit()
+    {
+        if (IsUpdate)
+            await UpdateRecord();
+        else
+            await SaveRecord();
+    }
+
+    public async Task LoadTalepDetayData()
+    {
+        this.IsUpdate = this.siparisDetayLogRef.HasValue;
+        if (!this.IsUpdate)
+            return;
+
+        talepDetayDTO = await mainDataHelper.LoadRecord(siparisDetayLogRef.Value);
+
+        await LoadBolum();
+        await LoadBlok();
+        await LoadKat();
+
+
+        await LoadAktivite2();
+        await LoadAktivite3();
+        await LoadKaynak();
+        await LoadBirim();
+
+        //await LoadBirimForExistingData();
+    }
+
+    private async Task UpdateRecord()
+    {
+        try
+        {
+            SubmitValidation();
+        }
+        catch (ClientException ex)
+        {
+            foreach (var item in ex.ErrorList)
+            {
+                Snackbar.Add(item, severity: Severity.Warning);
+            }
+            return;
+        }
+        catch (Exception)
+        {
+        }
+
+        try
+        {
+            _processing = true;
+
+            await mainDataHelper.UpdateRecord(talepDetayDTO);
+            Snackbar.Add("Güncellendi", severity: Severity.Success);
+
+            navigation.NavigateTo("/" + listPage + "/" + SiparisLogRef.ToString());
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, severity: Severity.Error);
+        }
+        finally
+        {
+            _processing = false;
+        }
+    }
+
+    private async Task SaveRecord()
+    {
+        try
+        {
+            SubmitValidation();
+        }
+        catch (ClientException ex)
+        {
+            foreach (var item in ex.ErrorList)
+            {
+                Snackbar.Add(item, severity: Severity.Warning);
+            }
+            return;
+        }
+        catch (Exception)
+        {
+        }
+
+        try
+        {
+            _processing = true;
+
+            talepDetayDTO.Logref = await yetkiHelper.RefNoAl(tableName);
+            talepDetayDTO.Parlogref = talepfis.LogRef;
+
+            await mainDataHelper.SaveRecord(talepDetayDTO);
+            Snackbar.Add("Kaydedildi", severity: Severity.Success);
+
+            navigation.NavigateTo("/" + listPage + "/" + this.talepfis.LogRef);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, severity: Severity.Error);
+        }
+        finally
+        {
+            _processing = false;
+        }
+    }
+
+    public void SubmitValidation()
+    {
+        var err = new List<string>();
+
+        if (talepDetayDTO.Aktivite3ref <= 0)
+            err.Add("Aktivite seçiniz");
+
+        if (talepDetayDTO.Kaynakref <= 0)
+            err.Add("Kaynak seçiniz");
+
+        if (talepDetayDTO.Miktar <= 0)
+            err.Add("Miktar sıfırdan büyük olmalı");
+
+        if (talepDetayDTO.Birimref <= 0)
+            err.Add("Birim seçiniz");
+
+        if (err.Count > 0)
+        {
+            var ex = new ClientException("Sipariş Detay Hatası");
+            ex.ErrorList = err;
+
+            throw ex;
+        }
+    }
+
+    public Task Vazgec()
+    {
+        navigation.NavigateTo("/" + listPage + "/" + SiparisLogRef.ToString());
+        return Task.CompletedTask;
+    }
+
+    public async Task LogRefUret()
+    {
+        var selectedFirmaDonem = await LocalStorageService.GetItemAsync<SisFirmaDonemDto>(Consts.FirmaDonem);
+        if (selectedFirmaDonem == null)
+            throw new Exception("Firma dönem seçilmedi");
+
+
+        var result2 = await httpClient.GetServiceResponseAsync<int>(UrlHelper.RefNoAl + "?tablename=" + tableName + "&firmaId=" + selectedFirmaDonem.firma_no.Value);
+        talepDetayDTO.Logref = result2;
+    }
+
+    public async Task LoadSelectBoxdata()
+    {
+        teslimYeriList = await sabitHelper.GetSabitDetay(SabitHelper.SabitTurler.TalepTeslimYeri);
+        aktivite1List = await aktiviteHelper.LoadRecords(new AktiviteRequestDto() { ParLogRef = 0 });
+
+        loadingCompleted = true;
+    }
+
+    protected async Task LoadAktivite2()
+    {
+
+        loadingCompleted = false;
+        aktivite2List.Clear();
+
+        aktivite2List = await aktiviteHelper.LoadRecords(new AktiviteRequestDto() { ParLogRef = talepDetayDTO.Aktivite1ref.Value });
+        aktivite3List.Clear();
+        kaynakList.Clear();
+        birimList.Clear();
+
+        loadingCompleted = true;
+        this.StateHasChanged();
+    }
+
+    public async Task LoadAktivite3()
+    {
+        loadingCompleted = false;
+        aktivite3List.Clear();
+
+        aktivite3List = await aktiviteHelper.LoadRecords(new AktiviteRequestDto() { ParLogRef = talepDetayDTO.Aktivite2ref.Value });
+        kaynakList.Clear();
+        birimList.Clear();
+
+        loadingCompleted = true;
+
+        this.StateHasChanged();
+    }
+
+    public async Task LoadKaynak()
+    {
+        loadingCompleted = false;
+        kaynakList.Clear();
+
+        kaynakList = await sabitHelper.GetKaynakList(talepDetayDTO.Aktivite3ref.Value);
+        birimList.Clear();
+
+        loadingCompleted = true;
+
+        this.StateHasChanged();
+    }
+
+    public async Task LoadBirim()
+    {
+        loadingCompleted = false;
+        birimList.Clear();
+
+        birimList = await sabitHelper.GetKaynakBirimKoduList(talepDetayDTO.Kaynakref.Value);
+
+        loadingCompleted = true;
+
+        this.StateHasChanged();
+    }
+
+    public async Task LoadBirimForExistingData()
+    {
+        birimList.Clear();
+        birimList = await sabitHelper.GetSabitDetay(SabitHelper.SabitTurler.Birimler);
+
+        birimList.RemoveAll(x => x.SabitDetayId != talepDetayDTO.Birimref);
+
+        this.StateHasChanged();
+    }
+
+    public async Task LoadEtap()
+    {
+        etapList = await mahalHelper.LoadRecords(new MahalRequestDto() { TurRef = (int)SharedEnums.MahalTur.Etap, ProjeRef = talepfis.ProjeRef.Value });
+        this.StateHasChanged();
+    }
+
+    public async Task LoadBolum()
+    {
+        bolumList = await mahalHelper.LoadRecords(new MahalRequestDto() { TurRef = (int)SharedEnums.MahalTur.Bolum, ProjeRef = talepfis.ProjeRef.Value });
+        blokList.Clear();
+        katList.Clear();
+        this.StateHasChanged();
+    }
+
+    public async Task LoadBlok()
+    {
+        blokList = await mahalHelper.LoadRecords(new MahalRequestDto() { TurRef = (int)SharedEnums.MahalTur.Blok, ProjeRef = talepfis.ProjeRef.Value });
+        katList.Clear();
+        this.StateHasChanged();
+    }
+
+    public async Task LoadKat()
+    {
+        katList = await mahalHelper.LoadRecords(new MahalRequestDto() { TurRef = (int)SharedEnums.MahalTur.Kat, ProjeRef = talepfis.ProjeRef.Value });
+        this.StateHasChanged();
+    }
+
+    private async Task LoadTalepFis()
+    {
+        talepfisRequest.SiparisDto = new SiparisDto() { logref = this.SiparisLogRef };
+
+        talepfis = (await talepFisHelper.LoadRecordsFromView(talepfisRequest)).FirstOrDefault();
+
+        loadingCompleted = true;
+    }
+
+    public async Task KaynakSec()
+    {
+        var opt = new ModalOptions();
+        var parameters = new ModalParameters();
+        parameters.Add("AktiviteRef", talepDetayDTO.Aktivite3ref);
+
+        var form = modal.Show<Components.Kaynak.KaynakSecListeComponent>("Kaynak Seç", parameters: parameters, options: opt);
+        var result = await form.Result;
+
+        if (!result.Cancelled)
+        {
+            if (result.Data != null)
+            {
+                var secim = (V002_Kaynak)result.Data;
+                if (talepDetayDTO.Aktivite1ref != secim.Aktiviteref3)
+                {
+                    talepDetayDTO.Aktivite1ref = secim.Aktiviteref3.Value;
+                    await LoadAktivite2();
+                }
+                if (talepDetayDTO.Aktivite2ref != secim.Aktiviteref2)
+                {
+                    talepDetayDTO.Aktivite2ref = secim.Aktiviteref2.Value;
+                    await LoadAktivite3();
+                }
+                if (talepDetayDTO.Aktivite3ref != secim.Aktiviteref)
+                {
+                    talepDetayDTO.Aktivite3ref = secim.Aktiviteref;
+                    await LoadKaynak();
+                    await LoadBirim();
+                }
+                talepDetayDTO.Kaynakref = secim.Logref;
+            }
+        }
+    }
+
+}

@@ -35,15 +35,21 @@
     <RowTemplate>
         <MudTd>
             <MudMenu Icon="@Icons.Material.Filled.MoreVert" Color="Color.Primary">
-                <MudMenuItem OnClick="(() => TalepFisGuncelle(context.LogRef))">
-                    <MudIcon Icon="far fa-edit" Color="Color.Primary" /> Talep Güncelle
-                </MudMenuItem>
+                @if (menuYetkiDto.Update)
+                {
+                    <MudMenuItem OnClick="(() => TalepFisGuncelle(context.LogRef))">
+                        <MudIcon Icon="far fa-edit" Color="Color.Primary" /> Talep Güncelle
+                    </MudMenuItem>
+                }
                 <MudMenuItem OnClick="(() => TalepFisDetay(context.LogRef))">
                     <MudIcon Icon="fas fa-info-circle" Color="Color.Primary" /> Talep Detay
                 </MudMenuItem>
-                <MudMenuItem OnClick="(() => TalepFisDetayEkle(context.LogRef))">
-                    <MudIcon Icon="fas fa-plus-circle" Color="Color.Primary" />
-                    Detay Ekle</MudMenuItem>
+                @if (menuYetkiDto.Update)
+                {
+                    <MudMenuItem OnClick="(() => TalepFisDetayEkle(context.LogRef))">
+                        <MudIcon Icon="fas fa-plus-circle" Color="Color.Primary" /> Detay Ekle
+                    </MudMenuItem>
+                }
                 <MudMenuItem OnClick="(() => TalepFisDetayIncele(context.LogRef))">
                     <MudIcon Icon="fas fa-info-circle" Color="Color.Primary" />
                 Talep Satırları</MudMenuItem>
@@ -95,17 +101,19 @@
 
     public HeaderBarSearch header = new HeaderBarSearch();
     public MenuYetkiDto menuYetkiDto = new MenuYetkiDto();
+    public MenuYetkiDto menuYetkiDtoTalepOzelDegistirme = new MenuYetkiDto();
     public List<TalepFisDto> mainDataList { get; set; }
     public List<V030_TalepFis> mainDataListView { get; set; }
 
     public TalepFisRequestDto mainDataRequest = new();
 
-    private string formName = "talepfis_liste";
+    private string DBformName = "talepfis_listef";
     private string insertPage = "talepfis_ekle";
     private string updatePage = "talepfis_ekle";
     private string headerText = "Talep Listesi";
     private bool loadingCompleted { get; set; }
     private bool TumTalepleriGormeYetkisi = false;
+    private bool TalepOzelDegistirmeYetkisi = false;
     private string kullanici_kodu = "";
 
     protected override async Task OnInitializedAsync()
@@ -115,7 +123,8 @@
             header.HeaderText = headerText;
 
             kullanici_kodu = await LocalStorageService.GetItemAsync<string>(Consts.KullaniciKodu);
-            menuYetkiDto = await yetkiHelper.GetKullaniciMenuYetkisi(this.formName);
+            menuYetkiDto = await yetkiHelper.GetKullaniciMenuYetkisi(this.DBformName);
+            menuYetkiDtoTalepOzelDegistirme = await yetkiHelper.GetKullaniciMenuYetkisi(this.DBformName + "@Deitir2");
             TumTalepleriGormeYetkisi = await yetkiHelper.GetKullaniciYetkisi(kullanici_kodu, Consts.KullaniciYetkisi_TumTalepleriGorme);
 
             await NewDataRequest();

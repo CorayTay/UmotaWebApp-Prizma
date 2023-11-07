@@ -39,5 +39,24 @@ namespace UmotaWebApp.Shared.Enum
             Iptal = 5
         }
 
+        public enum SiparisDurumIKodu
+        {
+            Bekliyor = 1,
+            OnaySurecinde = 2,
+            Onaylandi = 3,
+            GeriGonderildi = 4,
+            Iptal = 5
+        }
+
+        public enum TalepDurumIKodu
+        {
+            Bekliyor = 1,
+            OnaySurecinde = 2,
+            Onaylandi = 3,
+            Karsilaniyor = 4,
+            Karsilandi = 5,
+            Iptal = 6,
+            GeriGonderildi = 7
+        }
     }
 }

@@ -22,6 +22,7 @@ namespace UmotaWebApp.Server.Services.Infrastructure
         public Task<IEnumerable<SisSabitlerDetayDto>> GetKaynakBirimKoduList(int kaynakLogRef);
 
         public Task<string> GetMaxTalepFisNo(string projekodu, string talepturkodu);
+        public Task<string> GetParamVal(string kodu);
 
     }
 }

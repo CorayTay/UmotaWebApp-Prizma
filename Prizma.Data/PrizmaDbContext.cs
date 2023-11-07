@@ -29,6 +29,10 @@ namespace Prizma.Data
         public DbSet<TalepDosya> TalepDosya { get; set; }
         public DbSet<Kaynak> Kaynak { get; set; }
         public DbSet<V002_Kaynak> v002_Kaynak { get; set; }
+        public DbSet<SiparisOnay> SiparisOnay { get; set; }
+        public DbSet<V042_SiparisOnay> v042_SiparisOnay { get; set; }
+        public DbSet<SiparisDosya> SiparisDosya { get; set; }
+        public DbSet<SiparisDetay> SiparisDetay { get; set; }
 
         public PrizmaDbContext(DbContextOptions<PrizmaDbContext> dbContextOptions) : base(dbContextOptions)
         {
@@ -52,6 +56,10 @@ namespace Prizma.Data
             modelBuilder.ApplyConfiguration(new V002KaynakConfiguration());
             modelBuilder.ApplyConfiguration(new TalepDosyaConfiguration());
             modelBuilder.ApplyConfiguration(new SiparisConfiguration());
+            modelBuilder.ApplyConfiguration(new SiparisOnayConfiguration());
+            modelBuilder.ApplyConfiguration(new v042SiparisOnayConfiguration());
+            modelBuilder.ApplyConfiguration(new SiparisDosyaConfiguration());
+            modelBuilder.ApplyConfiguration(new SiparisDetayConfiguration());
         }
     }
 }

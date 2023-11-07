@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using UmotaWebApp.Client.Utils;
 using UmotaWebApp.Shared;
 using UmotaWebApp.Shared.ModelDto;
+using UmotaWebApp.Shared.ModelDto.Request;
 
 namespace UmotaWebApp.Client.ServiceHelpers
 {
@@ -117,5 +118,129 @@ namespace UmotaWebApp.Client.ServiceHelpers
 
             return result;
         }
+
+        public async Task<List<V042_SiparisOnay>> GetSiparisFisOnayListAsnyc(int siparisref)
+        {
+            var selectedFirmaDonem = await LocalStorageService.GetItemAsync<SisFirmaDonemDto>(Consts.FirmaDonem);
+
+            if (selectedFirmaDonem == null)
+                throw new Exception("Firma Dönem Seçili değil");
+
+            var request = new SiparisOnayRequestDto();
+            request.SiparisRef = siparisref;
+            request.FirmaId = selectedFirmaDonem.firma_no.Value;
+
+            var kullanicikodu = await LocalStorageService.GetItemAsync<string>(Consts.KullaniciKodu);
+            request.kullanicikodu = kullanicikodu;
+
+            var result = await httpClient.PostGetServiceResponseAsync<List<V042_SiparisOnay>, SiparisOnayRequestDto>(UrlHelper.SiparisFisOnayListeGetir, request, ThrowSuccessException: true);
+
+            return result;
+        }
+
+        public async Task<int> SiparisOnayRota(int siparisref)
+        {
+            var selectedFirmaDonem = await LocalStorageService.GetItemAsync<SisFirmaDonemDto>(Consts.FirmaDonem);
+
+            if (selectedFirmaDonem == null)
+                throw new Exception("Firma Dönem Seçili değil");
+
+            var request = new SiparisOnayRequestDto();
+            request.SiparisRef = siparisref;
+            request.FirmaId = selectedFirmaDonem.firma_no.Value;
+
+            var kullanicikodu = await LocalStorageService.GetItemAsync<string>(Consts.KullaniciKodu);
+            request.kullanicikodu = kullanicikodu;
+
+            var result = await httpClient.PostGetServiceResponseAsync<int, SiparisOnayRequestDto>(UrlHelper.SiparisOnayRota, request, ThrowSuccessException: true);
+
+            return result;
+        }
+
+        public async Task<int> SiparisDurumGuncelle(int siparisref)
+        {
+            var selectedFirmaDonem = await LocalStorageService.GetItemAsync<SisFirmaDonemDto>(Consts.FirmaDonem);
+
+            if (selectedFirmaDonem == null)
+                throw new Exception("Firma Dönem Seçili değil");
+
+            var request = new SiparisOnayRequestDto();
+            request.SiparisRef = siparisref;
+            request.FirmaId = selectedFirmaDonem.firma_no.Value;
+
+            var kullanicikodu = await LocalStorageService.GetItemAsync<string>(Consts.KullaniciKodu);
+            request.kullanicikodu = kullanicikodu;
+
+            var result = await httpClient.PostGetServiceResponseAsync<int, SiparisOnayRequestDto>(UrlHelper.SiparisDurumGuncelle, request, ThrowSuccessException: true);
+
+            return result;
+        }
+        public async Task<int> SiparisGetOnayLineRef(int siparisref)
+        {
+            var selectedFirmaDonem = await LocalStorageService.GetItemAsync<SisFirmaDonemDto>(Consts.FirmaDonem);
+
+            if (selectedFirmaDonem == null)
+                throw new Exception("Firma Dönem Seçili değil");
+
+            var request = new SiparisOnayRequestDto();
+            request.SiparisRef = siparisref;
+            request.FirmaId = selectedFirmaDonem.firma_no.Value;
+
+            var kullanicikodu = await LocalStorageService.GetItemAsync<string>(Consts.KullaniciKodu);
+            request.kullanicikodu = kullanicikodu;
+
+            var result = await httpClient.PostGetServiceResponseAsync<int, SiparisOnayRequestDto>(UrlHelper.SiparisGetOnayLineRef, request, ThrowSuccessException: true);
+
+            return result;
+        }
+        public async Task<int> SiparisOnayla(int siparisRef, int OnayLineRef, int OnayDurumu, string Aciklama)
+        {
+            var selectedFirmaDonem = await LocalStorageService.GetItemAsync<SisFirmaDonemDto>(Consts.FirmaDonem);
+
+            if (selectedFirmaDonem == null)
+                throw new Exception("Firma Dönem Seçili değil");
+
+            var request = new SiparisOnayRequestDto();
+            request.SiparisRef = siparisRef;
+            request.OnayLineRef = OnayLineRef;
+            request.OnayDurumu = OnayDurumu;
+            request.Aciklama = Aciklama;
+            request.FirmaId = selectedFirmaDonem.firma_no.Value;
+
+            var kullanicikodu = await LocalStorageService.GetItemAsync<string>(Consts.KullaniciKodu);
+            request.kullanicikodu = kullanicikodu;
+
+            var result = await httpClient.PostGetServiceResponseAsync<int, SiparisOnayRequestDto>(UrlHelper.SiparisOnayla, request, ThrowSuccessException: true);
+
+            return result;
+        }
+
+        public async Task<bool> UploadSiparisDosya(SiparisDosyaRequestDto request)
+        {
+            var selectedFirmaDonem = await LocalStorageService.GetItemAsync<SisFirmaDonemDto>(Consts.FirmaDonem);
+
+            if (selectedFirmaDonem == null)
+                throw new Exception("Firma Dönem Seçili değil");
+
+            var kullanicikodu = await LocalStorageService.GetItemAsync<string>(Consts.KullaniciKodu);
+            request.InsUser = kullanicikodu;
+
+            var result = await httpClient.PostGetServiceResponseAsync<bool, SiparisDosyaRequestDto>(UrlHelper.SiparisUploadDosya, request, ThrowSuccessException: true);
+
+            return result;
+        }
+
+        public async Task<List<SiparisDosyaDto>> SiparisDosyaGetAll(int siparisref)
+        {
+            var selectedFirmaDonem = await LocalStorageService.GetItemAsync<SisFirmaDonemDto>(Consts.FirmaDonem);
+
+            if (selectedFirmaDonem == null)
+                throw new Exception("Firma Dönem Seçili değil");
+
+            var result = await httpClient.PostGetServiceResponseAsync<List<SiparisDosyaDto>, int>(UrlHelper.SiparisDosyaGetAll, siparisref, ThrowSuccessException: true);
+
+            return result;
+        }
+
     }
 }

@@ -26,9 +26,23 @@ namespace UmotaWebApp.Client.ServiceHelpers
             throw new System.NotImplementedException();
         }
 
-        public Task<SiparisDetayDto> LoadRecord(int logref)
+        public async Task<SiparisDetayDto> LoadRecord(int logref)
         {
-            throw new System.NotImplementedException();
+            var selectedFirmaDonem = await LocalStorageService.GetItemAsync<SisFirmaDonemDto>(Consts.FirmaDonem);
+
+            if (selectedFirmaDonem == null)
+                throw new Exception("Firma Dönem Seçili değil");
+
+            var kullanicikodu = await LocalStorageService.GetItemAsync<string>(Consts.KullaniciKodu);
+
+
+            var request = new SiparisDetayRequestDto();
+            request.SiparisDetay = new SiparisDetayDto() { Logref = logref };
+            request.FirmaId = selectedFirmaDonem.firma_no.Value;
+
+            var result = await httpClient.PostGetServiceResponseAsync<SiparisDetayDto, SiparisDetayRequestDto>(UrlHelper.SiparisDetayGetir, request, ThrowSuccessException: true);
+
+            return result;
         }
 
         public Task<List<SiparisDetayDto>> LoadRecords()
@@ -41,14 +55,47 @@ namespace UmotaWebApp.Client.ServiceHelpers
             throw new System.NotImplementedException();
         }
 
-        public Task<SiparisDetayDto> SaveRecord(SiparisDetayDto request)
+        public async Task<SiparisDetayDto> SaveRecord(SiparisDetayDto td)
         {
-            throw new System.NotImplementedException();
+            var selectedFirmaDonem = await LocalStorageService.GetItemAsync<SisFirmaDonemDto>(Consts.FirmaDonem);
+
+            if (selectedFirmaDonem == null)
+                throw new Exception("Firma Dönem Seçili değil");
+
+            var kullanicikodu = await LocalStorageService.GetItemAsync<string>(Consts.KullaniciKodu);
+
+            td.Insdate = DateTime.Now;
+            td.Insuser = kullanicikodu;
+            td.Status = 0;
+
+            var request = new SiparisDetayRequestDto();
+            request.SiparisDetay = td;
+            request.FirmaId = selectedFirmaDonem.firma_no.Value;
+
+            var result = await httpClient.PostGetServiceResponseAsync<SiparisDetayDto, SiparisDetayRequestDto>(UrlHelper.SiparisDetayKaydet, request, ThrowSuccessException: true);
+
+            return result;
         }
 
-        public Task<SiparisDetayDto> UpdateRecord(SiparisDetayDto request)
+        public async Task<SiparisDetayDto> UpdateRecord(SiparisDetayDto td)
         {
-            throw new System.NotImplementedException();
+            var selectedFirmaDonem = await LocalStorageService.GetItemAsync<SisFirmaDonemDto>(Consts.FirmaDonem);
+
+            if (selectedFirmaDonem == null)
+                throw new Exception("Firma Dönem Seçili değil");
+
+            var kullanicikodu = await LocalStorageService.GetItemAsync<string>(Consts.KullaniciKodu);
+
+            td.Upddate = DateTime.Now;
+            td.Upduser = kullanicikodu;
+
+            var request = new SiparisDetayRequestDto();
+            request.SiparisDetay = td;
+            request.FirmaId = selectedFirmaDonem.firma_no.Value;
+
+            var result = await httpClient.PostGetServiceResponseAsync<SiparisDetayDto, SiparisDetayRequestDto>(UrlHelper.SiparisDetayGuncelle, request, ThrowSuccessException: true);
+
+            return result;
         }
         public async Task<List<V041_SiparisDetay>> LoadViewRecords(SiparisDetayRequestDto request)
         {

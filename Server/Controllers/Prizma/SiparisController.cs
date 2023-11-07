@@ -22,12 +22,16 @@ namespace UmotaWebApp.Server.Controllers
     {
         private readonly ISiparisService _siparisService;
         private readonly ISiparisDetayService _siparisDetayService;
+        private readonly ISiparisOnayService _siparisOnayService;
+        private readonly ISiparisDosyaService _siparisDosyaService;
         private readonly IMapper _mapper;
         private ILogger<SiparisController> Logger { get; }
-        public SiparisController(ISiparisService siparisService, ISiparisDetayService siparisDetayService, IMapper mapper, ILogger<SiparisController> logger)
+        public SiparisController(ISiparisService siparisService, ISiparisDetayService siparisDetayService, ISiparisOnayService siparisOnayService, ISiparisDosyaService siparisDosyaService, IMapper mapper, ILogger<SiparisController> logger)
         {
             _siparisService = siparisService;
             _siparisDetayService = siparisDetayService;
+            _siparisOnayService = siparisOnayService;
+            _siparisDosyaService = siparisDosyaService;
             _mapper = mapper;
             Logger = logger;
         }
@@ -106,6 +110,25 @@ namespace UmotaWebApp.Server.Controllers
             return result;
         }
 
+        [HttpPost("GetSiparisDetay")]
+        public async Task<ServiceResponse<SiparisDetayDto>> GetSiparisDetay(SiparisDetayRequestDto request)
+        {
+            var result = new ServiceResponse<SiparisDetayDto>();
+            try
+            {
+                var response = await _siparisDetayService.GetSiparisDetay(request.SiparisDetay.Logref);
+                var tdDto = _mapper.Map<SiparisDetay, SiparisDetayDto>(response);
+                result.Value = tdDto;
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(LogLevel.Error, ex.Message);
+                result.SetException(ex);
+            }
+
+            return result;
+        }
+
         [HttpPost("GetSiparisDetayListAsnyc")]
         public async Task<ServiceResponse<List<V041_SiparisDetay>>> GetSiparisDetayListAsnyc(SiparisDetayRequestDto request)
         {
@@ -131,6 +154,184 @@ namespace UmotaWebApp.Server.Controllers
 
             return result;
 
+        }
+
+        [HttpPost("GetSiparisFisOnayListAsnyc")]
+        public async Task<ServiceResponse<List<V042_SiparisOnay>>> GetSiparisFisOnayListAsnyc(SiparisOnayRequestDto request)
+        {
+            var result = new ServiceResponse<List<V042_SiparisOnay>>();
+            try
+            {
+                var td = await _siparisOnayService.GetSiparisFisOnayListAsnyc(request);
+
+                result.Value = td.ToList();
+
+            }
+            catch (ApiException ex)
+            {
+                Logger.Log(LogLevel.Error, ex.Message);
+                result.SetException(ex);
+
+            }
+            catch (Exception ex)
+            {
+                result.SetException(ex);
+                Logger.Log(LogLevel.Error, ex.Message);
+            }
+
+            return result;
+
+        }
+
+        [HttpPost("SiparisOnayRota")]
+        public async Task<ServiceResponse<int>> SiparisOnayRota(SiparisOnayRequestDto request)
+        {
+            var result = new ServiceResponse<int>();
+
+            try
+            {
+                result.Value = await _siparisOnayService.SiparisOnayRota(request);
+            }
+            catch (Exception ex)
+            {
+                result.SetException(ex);
+                Logger.Log(LogLevel.Error, ex.Message);
+            }
+
+            return result;
+        }
+
+        [HttpPost("SiparisDurumGuncelle")]
+        public async Task<ServiceResponse<int>> SiparisDurumGuncelle(SiparisOnayRequestDto request)
+        {
+            var result = new ServiceResponse<int>();
+
+            try
+            {
+                result.Value = await _siparisOnayService.SiparisDurumGuncelle(request);
+            }
+            catch (Exception ex)
+            {
+                result.SetException(ex);
+                Logger.Log(LogLevel.Error, ex.Message);
+            }
+
+            return result;
+        }
+
+        [HttpPost("UploadSiparisDosya")]
+        public async Task<ServiceResponse<bool>> UploadSiparisDosya(SiparisDosyaRequestDto request)
+        {
+            var result = new ServiceResponse<bool>();
+
+            try
+            {
+                result.Value = await _siparisOnayService.UploadSiparisDosya(request);
+            }
+            catch (Exception ex)
+            {
+                result.SetException(ex);
+                Logger.Log(LogLevel.Error, ex.Message);
+            }
+
+            return result;
+        }
+
+        [HttpPost("GetSiparisDosyalar")]
+        public async Task<ServiceResponse<List<SiparisDosyaDto>>> GetSiparisDosyalar([FromBody] int talepref)
+        {
+            var result = new ServiceResponse<List<SiparisDosyaDto>>();
+
+            try
+            {
+                var response = await _siparisDosyaService.GetDosyalar(talepref);
+                var td = _mapper.Map<IEnumerable<SiparisDosya>, IEnumerable<SiparisDosyaDto>>(response);
+
+                result.Value = td.ToList();
+            }
+            catch (Exception ex)
+            {
+                result.SetException(ex);
+                Logger.Log(LogLevel.Error, ex.Message);
+            }
+
+            return result;
+        }
+
+        [HttpPost("SiparisGetOnayLineRef")]
+        public async Task<ServiceResponse<int>> SiparisGetOnayLineRef(SiparisOnayRequestDto request)
+        {
+            var result = new ServiceResponse<int>();
+
+            try
+            {
+                result.Value = await _siparisOnayService.SiparisGetOnayLineRef(request);
+            }
+            catch (Exception ex)
+            {
+                result.SetException(ex);
+                Logger.Log(LogLevel.Error, ex.Message);
+            }
+
+            return result;
+        }
+
+        [HttpPost("SiparisOnayla")]
+        public async Task<ServiceResponse<int>> SiparisOnayla(SiparisOnayRequestDto request)
+        {
+            var result = new ServiceResponse<int>();
+
+            try
+            {
+                result.Value = await _siparisOnayService.SiparisOnayla(request);
+            }
+            catch (Exception ex)
+            {
+                result.SetException(ex);
+                Logger.Log(LogLevel.Error, ex.Message);
+            }
+
+            return result;
+        }
+
+        [HttpPost("CreateSiparisDetay")]
+        public async Task<ServiceResponse<SiparisDetayDto>> CreateSiparisDetay(SiparisDetayRequestDto request)
+        {
+            var result = new ServiceResponse<SiparisDetayDto>();
+            try
+            {
+                var response = await _siparisDetayService.CreateSiparisDetay(request.SiparisDetay);
+                var tdDto = _mapper.Map<SiparisDetay, SiparisDetayDto>(response);
+                result.Value = tdDto;
+
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(LogLevel.Error, ex.Message);
+                result.SetException(ex);
+            }
+
+            return result;
+        }
+
+        [HttpPost("UpdateSiparisDetay")]
+        public async Task<ServiceResponse<SiparisDetayDto>> UpdateSiparisDetay(SiparisDetayRequestDto request)
+        {
+            var result = new ServiceResponse<SiparisDetayDto>();
+            try
+            {
+                var response = await _siparisDetayService.Update(request);
+                var tdDto = _mapper.Map<SiparisDetay, SiparisDetayDto>(response);
+                result.Value = tdDto;
+
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(LogLevel.Error, ex.Message);
+                result.SetException(ex);
+            }
+
+            return result;
         }
 
 

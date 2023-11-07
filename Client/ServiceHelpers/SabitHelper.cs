@@ -90,5 +90,18 @@ namespace UmotaWebApp.Client.ServiceHelpers
 
             return result;
         }
+        public async Task<string> GetParamVal(string kodu)
+        {
+            var result = "";
+            try
+            {
+                result = await httpClient.GetServiceResponseAsync<string>("/api/helper/GetParamVal?kodu=" + kodu);
+            }
+            catch (Exception)
+            {
+            }
+
+            return result;
+        }
     }
 }

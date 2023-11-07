@@ -75,6 +75,8 @@ namespace UmotaWebApp.Server.Services.Extensions
             CreateMap<SiparisDetay, SiparisDetayDto>().ReverseMap();
             CreateMap<V040_Siparis, SiparisDto>().ReverseMap();
             CreateMap<V041_SiparisDetay, SiparisDetayDto>().ReverseMap();
+            CreateMap<SiparisOnay, SiparisOnayDto>().ReverseMap();
+            CreateMap<V042_SiparisOnay, SiparisOnayDto>().ReverseMap();
         }
     }
 

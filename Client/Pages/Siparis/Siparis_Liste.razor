@@ -208,13 +208,13 @@
 
     private Task Detay(int logref)
     {
-        navigation.NavigateTo("/talepfisdetay_liste/" + logref);
+        navigation.NavigateTo("/siparis_detay/" + logref);
         return Task.CompletedTask;
     }
 
     private Task DetayEkle(int logref)
     {
-        navigation.NavigateTo("/talepdetay_ekle/" + logref);
+        navigation.NavigateTo("/siparis_detay_ekle/" + logref);
         return Task.CompletedTask;
     }
 
@@ -227,7 +227,7 @@
     private async Task DetayIncele(int logref)
     {
         var opt = new ModalOptions();
-        opt.Size = ModalSize.Large;
+        opt.Size = ModalSize.ExtraLarge;
         var parameters = new ModalParameters();
         parameters.Add("SiparisRef", logref);
 

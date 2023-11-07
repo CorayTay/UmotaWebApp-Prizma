@@ -172,5 +172,15 @@ namespace UmotaWebApp.Server.Services.Infrastructure
                 return dbResponse;
             }
         }
+        public async Task<string> GetParamVal(string kodu)
+        {
+            using (SqlConnection db = new SqlConnection(Configuration.GetPrizmeDbConnection()))
+            {
+                string sqlstring = "select isnull((select top 1 deger from parametre with(nolock) where kodu=" + kodu + "),'') as deger";
+
+                var dbResponse = await db.QuerySingleAsync<string>(sqlstring, commandType: CommandType.Text);
+                return dbResponse;
+            }
+        }
     }
 }

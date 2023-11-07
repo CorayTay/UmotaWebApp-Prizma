@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using UmotaWebApp.Shared;
 
 namespace UmotaWebApp.Shared.ModelDto.Request
 {
-    public class SiparisDetayRequestDto
+    public class SiparisOnayRequestDto
     {
         public short FirmaId { get; set; }
         public string kullanicikodu { get; set; }
-        public string SearchText { get; set; }
-        public int TopRowCount { get; set; }
-        public SiparisDetayDto SiparisDetay { get; set; }
+        public int SiparisRef { get; set; }
+        public int OnayLineRef { get; set; }
+        public int OnayDurumu { get; set; }
+        public string Aciklama { get; set; }
     }
 }

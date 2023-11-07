@@ -5,7 +5,7 @@
         <MudProgressCircular Color="Color.Success" Indeterminate="true" />
     }
 
-    <MudTable Items="talepDetays" Hover="true" Breakpoint="Breakpoint.Sm" Bordered="true" Striped="true" Filter="new Func<V031_TalepDetay,bool>(FilterFunc1)">
+    <MudTable @ref="_table" T="V031_TalepDetay" Items="talepDetays" Hover="true" Breakpoint="Breakpoint.Sm" Bordered="true" Striped="true" MultiSelection="true" @bind-SelectedItems="selectedItems" Filter="new Func<V031_TalepDetay,bool>(FilterFunc1)">
 
         <ToolBarContent>
             <MudText Typo="Typo.h6">Talep Satırları</MudText>
@@ -14,30 +14,52 @@
         </ToolBarContent>
 
         <HeaderContent>
+            <MudTh>Etap</MudTh>
+            <MudTh>Bölüm</MudTh>
             <MudTh>Aktivite 1</MudTh>
             <MudTh>Aktivite 2</MudTh>
-            <MudTh>Aktivite 3</MudTh>
             <MudTh>Kaynak Kodu</MudTh>
             <MudTh>Kaynak Adı</MudTh>
             <MudTh>Marka</MudTh>
             <MudTh>Teknik Özellikler / Notlar</MudTh>
             <MudTh>Miktar</MudTh>
             <MudTh>Birim</MudTh>
+            <MudTh>Kalan Miktar</MudTh>
         </HeaderContent>
 
         <RowTemplate>
+            <MudTd DataLabel="Etap">@context.Mahal1adi</MudTd>
+            <MudTd DataLabel="Bölüm">@context.Mahal2adi</MudTd>
             <MudTd DataLabel="Aktivite 1">@context.Aktivite1adi</MudTd>
             <MudTd DataLabel="Aktivite 2">@context.Aktivite2adi</MudTd>
-            <MudTd DataLabel="Aktivite 3">@context.Aktivite3adi</MudTd>
             <MudTd DataLabel="Kaynak Kodu">@context.Kaynakkodu</MudTd>
             <MudTd DataLabel="Kaynak Adı">@context.Kaynakadi</MudTd>
             <MudTd DataLabel="Marka">@context.Marka</MudTd>
             <MudTd DataLabel="Teknik Özellikler / Notlar">@context.Aciklama</MudTd>
             <MudTd DataLabel="Miktar">@context.Miktar</MudTd>
             <MudTd DataLabel="Birim">@context.Birimadi</MudTd>
+            <MudTd DataLabel="Kalan Miktar">@context.Kalanmiktar</MudTd>
         </RowTemplate>
 
     </MudTable>
+
+    <MudDivider DividerType="DividerType.FullWidth" Class="my-2" />
+
+    <div class="form-group">
+        <MudButton Disabled="@_processing" OnClick="SiparisOlustur" Variant="Variant.Filled" Color="Color.Primary">
+            @if (_processing)
+            {
+                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                <MudText Class="ms-2">Bekleyiniz...</MudText>
+            }
+            else
+            {
+                <MudText>Sipariş Oluştur</MudText>
+            }
+        </MudButton>
+        <CancelButtonComponent Caption="Vazgeç" OnClick="Vazgec" />
+    </div>
+
 </div>
 
 @code
@@ -52,15 +74,25 @@
     HttpClient httpClient { get; set; }
 
     [Inject]
+    ISnackbar Snackbar { get; set; }
+
+    [Inject]
     TalepDetayHelper talepDetayHelper { get; set; }
+
+    [Inject]
+    TalepFisHelper talepFisHelper { get; set; }
 
     [Parameter]
     public int? TalepFisRef { get; set; }
 
+    public V030_TalepFis TalepFis { get; set; }
     public List<V031_TalepDetay> talepDetays { get; set; }
+    private MudTable<V031_TalepDetay> _table;
+    private HashSet<V031_TalepDetay> selectedItems = new HashSet<V031_TalepDetay>();
 
     private string _searchString;
     private bool loadingCompleted = true;
+    private bool _processing = false;
 
     private bool FilterFunc1(V031_TalepDetay element) => FilterFunc(element, _searchString);
 
@@ -71,6 +103,10 @@
         if (element.Aciklama != null && element.Aciklama.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
         if (element.Kaynakadi != null && element.Kaynakadi.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (element.Aktivite1adi != null && element.Aktivite1adi.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (element.Aktivite2adi != null && element.Aktivite2adi.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
         if (element.Marka != null && element.Marka.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
@@ -86,6 +122,14 @@
     private async Task LoadList()
     {
         loadingCompleted = false;
+
+        TalepFisRequestDto talepfisRequest = new();
+        talepfisRequest.TalepFis = new TalepFisDto() { logref = TalepFisRef.Value };
+        talepfisRequest.TopRowCount = 1;
+
+        var response = await talepFisHelper.LoadRecords_ViewV030TalepFis(talepfisRequest);
+        TalepFis = response.FirstOrDefault();
+
         var request = new TalepFisDetayRequestDto();
         request.TalepFisDetay = new V031_TalepDetay() { Parlogref = TalepFisRef };
         talepDetays = await talepDetayHelper.LoadViewRecords(request);
@@ -101,4 +145,62 @@
     {
         await ModalInstance.CloseAsync();
     }
+    public void SubmitValidation()
+    {
+        var err = new List<string>();
+
+        if (TalepFis.DurumiKodu == null || TalepFis.DurumiKodu != (int)SharedEnums.TalepDurumIKodu.Onaylandi)
+            err.Add("Talep onaylanmamış");
+
+        if (selectedItems.Count < 1)
+            err.Add("Hiçbir satır seçili değil");
+
+        if (err.Count > 0)
+        {
+            var ex = new ClientException("Kayıt Hatası");
+            ex.ErrorList = err;
+
+            throw ex;
+        }
+    }
+
+    public async Task SiparisOlustur()
+    {
+        try
+        {
+            SubmitValidation();
+        }
+        catch (ClientException ex)
+        {
+            foreach (var item in ex.ErrorList)
+            {
+                Snackbar.Add(item, severity: Severity.Warning);
+            }
+            return;
+        }
+        catch (Exception)
+        {
+        }
+
+        if (selectedItems.Count > 0)
+        {
+            var lst = string.Join(",", selectedItems.Where(x => x.Kalanmiktar > 0).OrderBy(x => x.Logref).Select(x => x.Logref));
+            List<V031_TalepDetay> Detays = selectedItems.Where(x => x.Kalanmiktar > 0).OrderBy(x => x.Logref).ToList();
+            // if (string.IsNullOrWhiteSpace(lst))
+            if (Detays.Count == 0)
+            {
+                Snackbar.Add("Kalan miktar sıfırdan büyük olmalıdır", severity: Severity.Warning);
+                return;
+            }
+
+
+        }
+        else
+        {
+
+        }
+
+        await ModalInstance.CloseAsync();
+    }
+
 }

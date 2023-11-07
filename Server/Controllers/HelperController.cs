@@ -267,5 +267,26 @@ namespace UmotaWebApp.Server.Controllers
                 return e;
             }
         }
+
+        [HttpGet("GetParamVal")]
+        public async Task<ServiceResponse<string>> GetParamVal(string kodu)
+        {
+            try
+            {
+                return new ServiceResponse<string>()
+                {
+                    Value = await RefService.GetParamVal(kodu)
+                };
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(LogLevel.Error, ex.Message);
+
+                var e = new ServiceResponse<string>();
+                e.SetException(ex);
+                return e;
+            }
+        }
+
     }
 }

@@ -19,6 +19,8 @@ namespace Prizma.Core
         ITalepOnayRepository TalepOnayRepository { get; }
         ITalepDosyaRepository TalepDosyaRepository { get; }
         IKaynakRepository KaynakRepository { get; }
+        ISiparisOnayRepository SiparisOnayRepository { get; }
+        ISiparisDosyaRepository SiparisDosyaRepository { get; }
         Task<int> CommitAsync();
     }
 }
