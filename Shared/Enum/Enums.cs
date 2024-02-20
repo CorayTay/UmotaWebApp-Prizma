@@ -48,6 +48,23 @@ namespace UmotaWebApp.Shared.Enum
             Iptal = 5
         }
 
+        public enum FaturaTipi
+        {
+            SatinAlmaFaturasi = 1,
+            SatinAlmaIadeFaturasi = 6,
+            SatisFaturasi = 8,
+            SatinAlmaFiyatFarkiFaturasi = 13
+        }
+
+        public enum FaturaDurumIKodu
+        {
+            Bekliyor = 1,
+            OnaySurecinde = 2,
+            Onaylandi = 3,
+            GeriGonderildi = 4,
+            Iptal = 5
+        }
+
         public enum TalepDurumIKodu
         {
             Bekliyor = 1,

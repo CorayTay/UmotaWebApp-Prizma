@@ -616,9 +616,9 @@
                 {
                     talepDetayDTO.Aktivite3Ref = secim.Aktiviteref;
                     await LoadKaynak();
-                    await LoadBirim();
                 }
                 talepDetayDTO.KaynakRef = secim.Logref;
+                await LoadBirim();
             }
         }
     }

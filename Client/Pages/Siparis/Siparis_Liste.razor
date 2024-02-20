@@ -12,10 +12,10 @@
 
 <MudTable Items="@mainDataListView" FixedHeader="true" Height="500px" Dense="true" Hover="true" RowsPerPage="100" Bordered="true" Striped="true">
     <ToolBarContent>
-        @if (menuYetkiDto.Insert)
+     @*    @if (menuYetkiDto.Insert)
         {
             <MudIconButton Icon="@Icons.Material.Filled.NoteAdd" OnClick="YeniKayitEkle" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Medium" Title="Yeni Kayıt Ekle" />
-        } &nbsp;
+        } &nbsp; *@
     </ToolBarContent>
 
 
@@ -35,30 +35,30 @@
     <RowTemplate>
         <MudTd>
             <MudMenu Icon="@Icons.Material.Filled.MoreVert" Color="Color.Primary">
-                <MudMenuItem OnClick="(() => Guncelle(context.LogRef))">
+           @*      <MudMenuItem OnClick="(() => Guncelle(context.LogRef))">
                     <MudIcon Icon="far fa-edit" Color="Color.Primary" /> Güncelle
-                </MudMenuItem>
+                </MudMenuItem> *@
                 <MudMenuItem OnClick="(() => Detay(context.LogRef))">
                     <MudIcon Icon="fas fa-info-circle" Color="Color.Primary" /> Detay
                 </MudMenuItem>
-                <MudMenuItem OnClick="(() => DetayEkle(context.LogRef))">
+              @*   <MudMenuItem OnClick="(() => DetayEkle(context.LogRef))">
                     <MudIcon Icon="fas fa-plus-circle" Color="Color.Primary" />
                     Detay Ekle
-                </MudMenuItem>
+                </MudMenuItem> *@
                 <MudMenuItem OnClick="(() => DetayIncele(context.LogRef))">
                     <MudIcon Icon="fas fa-info-circle" Color="Color.Primary" />
                     Sipariş Satırları
                 </MudMenuItem>
             </MudMenu>
         </MudTd>
-        <MudTd DataLabel="Sipariş Tarihi">@context.Tarih.Value.ToString("dd.MM.yyyy")</MudTd>
+        <MudTd DataLabel="Sipariş Tarihi">@context.TarihFormatted</MudTd>
         <MudTd DataLabel="Sipariş No">@context.FisNo</MudTd>
         <MudTd DataLabel="Proje Adı">@context.ProjeAdi</MudTd>
         <MudTd DataLabel="Cari Kodu">@context.CariKodu</MudTd>
         <MudTd DataLabel="Cari Adı">@context.CariAdi</MudTd>
-        <MudTd DataLabel="Tutar İD" Style="text-align:right">@context.NetToplamID.Value.ToString("N2")</MudTd>
+        <MudTd DataLabel="Tutar İD" Style="text-align:right">@context.NetToplamIDFormatted</MudTd>
         <MudTd DataLabel="Döviz">@context.DovizKoduID</MudTd>
-        <MudTd DataLabel="Tutar TL" Style="text-align:right">@context.NetToplamTL.Value.ToString("N2")</MudTd>
+        <MudTd DataLabel="Tutar TL" Style="text-align:right">@context.NetToplamTLFormatted</MudTd>
         <MudTd DataLabel="Durumu">@context.DurumAdi</MudTd>
         <MudTd DataLabel="Kaydı Giren">@context.InsUser</MudTd>
     </RowTemplate>

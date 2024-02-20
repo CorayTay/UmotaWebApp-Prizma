@@ -38,7 +38,7 @@ namespace Prizma.Data.Repositories
 
         public Task<int> TalepOnayRota(TalepOnayRequestDto request)
         {
-            FormattableString sql = $"[dbo].[UmotaSP_TalepOnayRotaProc] @TalepRef = {request.TalepRef},@KullaniciKodu = {request.kullanicikodu}";
+            FormattableString sql = $"[dbo].[UmotaSP_TalepOnayRotaProc] @TalepRef = {request.TalepRef},@KullaniciKodu = N'{request.kullanicikodu}'";
             var result = dbContext.Database.ExecuteSql(sql);
 
             return Task.FromResult(result);
@@ -46,7 +46,7 @@ namespace Prizma.Data.Repositories
 
         public Task<int> TalepDurumGuncelle(TalepOnayRequestDto request)
         {
-            FormattableString sql = $"[dbo].[UmotaSP_TalepDurumGuncelle] @TalepRef = {request.TalepRef},@KullaniciKodu = {request.kullanicikodu}";
+            FormattableString sql = $"[dbo].[UmotaSP_TalepDurumGuncelle] @TalepRef = {request.TalepRef},@KullaniciKodu = N' {request.kullanicikodu} '";
             var result = dbContext.Database.ExecuteSql(sql);
 
             return Task.FromResult(result);
@@ -60,7 +60,7 @@ namespace Prizma.Data.Repositories
                 Direction = System.Data.ParameterDirection.Output,
             };
 
-            string sql = $"EXEC @returnValue = [dbo].[UmotaSP_TalepGetOnayLineRef] @TalepRef = {request.TalepRef},@KullaniciKodu = {request.kullanicikodu}";
+            string sql = $"EXEC @returnValue = [dbo].[UmotaSP_TalepGetOnayLineRef] @TalepRef = {request.TalepRef},@KullaniciKodu = N' {request.kullanicikodu} '";
             var result = dbContext.Database.ExecuteSqlRaw(sql, parameterReturn);
             int returnValue = (int)parameterReturn.Value;
             return Task.FromResult(returnValue);
@@ -72,7 +72,7 @@ namespace Prizma.Data.Repositories
         }
         public Task<int> TalepOnayla(TalepOnayRequestDto request)
         {
-            FormattableString sql = $"[dbo].[UmotaSP_TalepOnayla] @TalepRef = {request.TalepRef},@KullaniciKodu = {request.kullanicikodu},@OnayLineRef = {request.OnayLineRef},@OnayIKodu = {request.OnayDurumu},@Aciklama = {request.Aciklama}";
+            FormattableString sql = $"[dbo].[UmotaSP_TalepOnayla] @TalepRef = {request.TalepRef},@KullaniciKodu = N'{request.kullanicikodu}',@OnayLineRef = {request.OnayLineRef},@OnayIKodu = {request.OnayDurumu},@Aciklama = N'{request.Aciklama}'";
             var result = dbContext.Database.ExecuteSql(sql);
 
             return Task.FromResult(result);

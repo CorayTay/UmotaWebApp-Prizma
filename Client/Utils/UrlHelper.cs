@@ -144,5 +144,7 @@ namespace UmotaWebApp.Client.Utils
         public const string SiparisOnayla = "/api/siparis/SiparisOnayla";
         public const string SiparisUploadDosya = "/api/siparis/UploadSiparisDosya";
         public const string SiparisDosyaGetAll = "/api/siparis/GetSiparisDosyalar";
+
+        public const string FaturaLoadRecordsFromView = "/api/fatura/LoadRecordsFromView";
     }
 }

@@ -33,6 +33,8 @@ namespace Prizma.Data
         public DbSet<V042_SiparisOnay> v042_SiparisOnay { get; set; }
         public DbSet<SiparisDosya> SiparisDosya { get; set; }
         public DbSet<SiparisDetay> SiparisDetay { get; set; }
+        public DbSet<V047_Fatura> v047_Fatura { get; set; }
+        public DbSet<Fatura> Fatura { get; set; }
 
         public PrizmaDbContext(DbContextOptions<PrizmaDbContext> dbContextOptions) : base(dbContextOptions)
         {
@@ -60,6 +62,8 @@ namespace Prizma.Data
             modelBuilder.ApplyConfiguration(new v042SiparisOnayConfiguration());
             modelBuilder.ApplyConfiguration(new SiparisDosyaConfiguration());
             modelBuilder.ApplyConfiguration(new SiparisDetayConfiguration());
+            modelBuilder.ApplyConfiguration(new FaturaConfiguration());
+            modelBuilder.ApplyConfiguration(new V047FaturaConfiguration());
         }
     }
 }

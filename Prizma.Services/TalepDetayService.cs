@@ -70,6 +70,7 @@ namespace Prizma.Services
             row.ChangeMahal(td.mahal1ref, td.mahal2ref,td.mahal3ref,td.mahal4ref,td.mahal5ref);
             row.ChangeMiktar(td.Miktar, td.BirimRef);
             row.ChangeTeslimat(td.TeslimYeriRef, td.TeslimTarihi);
+            row.ChangeMarka(td.Marka);
 
             _unitOfWork.TalepDetayRepository.Update(row);
             await _unitOfWork.CommitAsync();

@@ -35,13 +35,14 @@ namespace Prizma.Core.Model
             
         }
 
-        public static TalepFis Create(int logref, int? tur, int? proje, string talepEden)
+        public static TalepFis Create(int logref, int? tur, int? proje, string talepEden, int? lgfirmano)
         {
             TalepFis yeniTalepFis = (TalepFis)_talepFis.MemberwiseClone();
             yeniTalepFis.TalepEden = talepEden;
             yeniTalepFis.TurRef = tur.HasValue ? tur.Value : 0;
             yeniTalepFis.ProjeRef = proje.HasValue ? proje.Value : 0;
             yeniTalepFis.logref = logref;
+            yeniTalepFis.LgFirmaNo = lgfirmano;
 
             return yeniTalepFis;
         }

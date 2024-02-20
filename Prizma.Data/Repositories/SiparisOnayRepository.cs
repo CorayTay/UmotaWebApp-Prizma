@@ -33,7 +33,7 @@ namespace Prizma.Data.Repositories
 
         public Task<int> SiparisDurumGuncelle(SiparisOnayRequestDto request)
         {
-            FormattableString sql = $"[dbo].[UmotaSP_SiparisDurumGuncelle] @SiparisRef = {request.SiparisRef},@KullaniciKodu = {request.kullanicikodu}";
+            FormattableString sql = $"[dbo].[UmotaSP_SiparisDurumGuncelle] @SiparisRef = {request.SiparisRef},@KullaniciKodu = N'{request.kullanicikodu}'";
             var result = dbContext.Database.ExecuteSql(sql);
 
             return Task.FromResult(result);
@@ -48,7 +48,7 @@ namespace Prizma.Data.Repositories
                 Direction = System.Data.ParameterDirection.Output,
             };
 
-            string sql = $"EXEC @returnValue = [dbo].[UmotaSP_SiparisGetOnayLineRef] @SiparisRef = {request.SiparisRef},@KullaniciKodu = {request.kullanicikodu}";
+            string sql = $"EXEC @returnValue = [dbo].[UmotaSP_SiparisGetOnayLineRef] @SiparisRef = {request.SiparisRef},@KullaniciKodu = N'{request.kullanicikodu}'";
             var result = dbContext.Database.ExecuteSqlRaw(sql, parameterReturn);
             int returnValue = (int)parameterReturn.Value;
             return Task.FromResult(returnValue);
@@ -56,7 +56,7 @@ namespace Prizma.Data.Repositories
 
         public Task<int> SiparisOnayla(SiparisOnayRequestDto request)
         {
-            FormattableString sql = $"[dbo].[UmotaSP_SiparisOnayla] @SiparisRef = {request.SiparisRef},@KullaniciKodu = {request.kullanicikodu},@OnayLineRef = {request.OnayLineRef},@OnayIKodu = {request.OnayDurumu},@Aciklama = {request.Aciklama}";
+            FormattableString sql = $"[dbo].[UmotaSP_SiparisOnayla] @SiparisRef = {request.SiparisRef},@KullaniciKodu = N'{request.kullanicikodu}',@OnayLineRef = {request.OnayLineRef},@OnayIKodu = {request.OnayDurumu},@Aciklama = N'{request.Aciklama}'";
             var result = dbContext.Database.ExecuteSql(sql);
 
             return Task.FromResult(result);
@@ -64,7 +64,7 @@ namespace Prizma.Data.Repositories
 
         public Task<int> SiparisOnayRota(SiparisOnayRequestDto request)
         {
-            FormattableString sql = $"[dbo].[UmotaSP_SiparisOnayRotaProc] @SiparisRef = {request.SiparisRef},@KullaniciKodu = {request.kullanicikodu}";
+            FormattableString sql = $"[dbo].[UmotaSP_SiparisOnayRotaProc] @SiparisRef = {request.SiparisRef},@KullaniciKodu = N'{request.kullanicikodu}'";
             var result = dbContext.Database.ExecuteSql(sql);
 
             return Task.FromResult(result);

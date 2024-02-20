@@ -20,7 +20,7 @@
     <RowTemplate>
         <MudTd DataLabel="Proje Adı">@context.ProjeAdi</MudTd>
         <MudTd DataLabel="Sipariş No">@context.FisNo</MudTd>
-        <MudTd DataLabel="Sipariş Tarihi">@context.Tarih.Value.ToString("dd.MM.yyyy")</MudTd>
+        <MudTd DataLabel="Sipariş Tarihi">@context.TarihFormatted</MudTd>
         <MudTd DataLabel="Tedarikçi">@context.CariAdi</MudTd>
         <MudTd DataLabel="Durum">@context.DurumAdi</MudTd>
     </RowTemplate>
@@ -72,7 +72,7 @@
                 <MudTd DataLabel="Birim">@context.Birimadi</MudTd>
                 <MudTd DataLabel="Fiyat">@context.Fiyat</MudTd>
                 <MudTd DataLabel="Döviz">@context.FDovizKodu</MudTd>
-                <MudTd DataLabel="Tutar">@context.Tutar</MudTd>
+                <MudTd DataLabel="Tutar">@context.TutarFormatted</MudTd>
             </RowTemplate>
 
         </MudTable>

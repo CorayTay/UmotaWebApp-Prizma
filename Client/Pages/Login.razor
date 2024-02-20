@@ -7,6 +7,10 @@
 
         <div class="col col-sm-6 col-md-6 col-lg-4 col-xl-3">
 
+            <div class="form-group mt-2">
+                 <img src="/img/logo.png" />
+            </div>
+
             <EditForm Model="@request" OnValidSubmit="LoginProcess">
                 <DataAnnotationsValidator />
 
@@ -14,15 +18,15 @@
                 {
 
                     <div class="form-group">
-                        <input @bind-value="request.Kod" class="form-control form-control-lg" type="text" placeholder="Kullanıcı Kodu" />
+                        <input @bind-value="request.Kod" class="form-control form-control-lg" type="text" placeholder="Kullanıcı Kodu" required="true" />
                     </div>
 
                     <div class="form-group">
-                        <input @bind-value="request.Sifre" class="form-control form-control-lg" type="password" placeholder="Şifre" />
+                        <input @bind-value="request.Sifre" class="form-control form-control-lg" type="password" placeholder="Şifre" required="true" />
                     </div>
 
                     <div class="form-group">
-                        <button class="btn btn-info btn-block">Giriş</button>
+                        <button class="btn btn-primary btn-block">Giriş</button>
                     </div>
 
                 }
@@ -53,7 +57,7 @@
                     </div>
 
                     <div class="form-group">
-                        <button class="btn btn-info btn-block" @onclick="SaveRedirect">Devam Et</button>
+                        <button class="btn btn-primary btn-block" @onclick="SaveRedirect">Devam Et</button>
                     </div>
 
                 }

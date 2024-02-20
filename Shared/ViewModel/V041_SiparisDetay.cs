@@ -114,6 +114,27 @@ namespace UmotaWebApp.Shared
         public int? TalepDetayBirimRef { get; set; }
         public string? TalepDetayBirimKodu { get; set; }
         public double? TalepMiktar { get; set; }
+        public string TutarFormatted
+        {
+            get
+            {
+                return this.Tutar.HasValue ? String.Format("{0:N2}", this.Tutar.Value) : "";
+            }
+        }
+        public string TutarTLFormatted
+        {
+            get
+            {
+                return this.TutarTL.HasValue ? String.Format("{0:N2}", this.TutarTL.Value) : "";
+            }
+        }
+        public string TutarIDFormatted
+        {
+            get
+            {
+                return this.TutarID.HasValue ? String.Format("{0:N2}", this.TutarID.Value) : "";
+            }
+        }
 
     }
 }

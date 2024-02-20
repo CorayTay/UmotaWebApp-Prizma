@@ -48,5 +48,27 @@ namespace UmotaWebApp.Shared
         public string? CariAdi { get; set; }
         public string? DovizKoduRD { get; set; }
         public string? DovizKoduID { get; set; }
+        public string TarihFormatted
+        {
+            get
+            {
+                return this.Tarih.HasValue ? this.Tarih.Value.ToString("dd.MM.yyyy") : "-";
+            }
+        }
+        public string NetToplamTLFormatted
+        {
+            get
+            {
+                return this.NetToplamTL.HasValue ? String.Format("{0:N2}", this.NetToplamTL.Value) : "";
+            }
+        }
+        public string NetToplamIDFormatted
+        {
+            get
+            {
+                return this.NetToplamID.HasValue ? String.Format("{0:N2}", this.NetToplamID.Value) : "";
+            }
+        }
+
     }
 }

@@ -67,6 +67,7 @@ namespace UmotaWebApp.Client.ServiceHelpers
             tf.insdate = DateTime.Now;
             tf.insuser = kullanicikodu;
             tf.status = 0;
+            tf.LgFirmaNo = selectedFirmaDonem.logo_firma.Value;
 
             var request = new TalepFisRequestDto();
             request.TalepFis = tf;

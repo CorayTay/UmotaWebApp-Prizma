@@ -1,0 +1,148 @@
+﻿<EditForm Model="faturarequest">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mt-12">
+        <div class="form">
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-12">
+                        <label>Proje</label>
+                        <InputSelect @bind-Value="faturarequest.ProjeRef" class="form-control">
+                            @if (projeler != null)
+                            {
+                                <option value="-1">@Utils.Mesajlar.Seciniz</option>
+                                @foreach (var item in projeler)
+                                {
+                                    <option value="@item.logref">@item.Adi</option>
+                                }
+                            }
+                        </InputSelect>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <label>Cari Adı</label>
+                        <InputText @bind-Value="faturarequest.CariAdi" class="form-control" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label>Başlangıç Tarih</label>
+                        <InputDate @bind-Value="faturarequest.BaslangicTarih" class="form-control"></InputDate>
+                    </div>
+                    <div class="col-md-6">
+                        <label>Bitiş Tarih</label>
+                        <InputDate @bind-Value="faturarequest.BitisTarih" class="form-control"></InputDate>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                    </div>
+                    <div class="col-md-6">
+                        <MudSwitch @bind-Checked="faturarequest.OnayBekleyen" Class="mud-width-full" Color="Color.Primary">Onayımı Bekleyenler</MudSwitch>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        @* <MudSelect T="string" Label="Talep Durumu" MultiSelection="true" MultiSelectionTextFunc="@(new Func<List<string>, string>(GetMultiSelectionText))" @bind-Value="taleprequest.DurumIKoduSecimList" @bind-SelectedValues="options"> *@
+                        <MudSelect T="string" Label="Durumu" MultiSelection="true" @bind-Value="faturarequest.DurumIKoduSecimList" @bind-SelectedValues="options">
+                            @foreach (var item in FaturaDurumList)
+                            {
+                                <MudSelectItem T="string" Value="@item.Ikodu.ToString()">@item.Adi</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <label>Fişte Ara</label>
+                        <InputText @bind-Value="faturarequest.SearchText" class="form-control" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <label>Satırlarda Ara</label>
+                        <InputText @bind-Value="faturarequest.SearchTextSatir" class="form-control" />
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <SaveButtonComponent Caption="Tamam" OnClick="Tamam" />
+        <CancelButtonComponent Caption="Vazgeç" OnClick="Vazgec" />
+    </div>
+
+</EditForm>
+
+@code {
+    [Parameter]
+    public FaturaRequestDto mainRequest { get; set; }
+
+    [CascadingParameter] IModalService modal { get; set; }
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+
+    [Inject]
+    ISnackbar Snackbar { get; set; }
+
+    [Inject]
+    ModalManager ModalManager { get; set; }
+
+    [Inject]
+    NavigationManager navigation { get; set; }
+
+    [Inject]
+    HttpClient httpClient { get; set; }
+
+    [Inject]
+    ILocalStorageService LocalStorageService { get; set; }
+
+    [Inject]
+    ProjeHelper projeHelper { get; set; }
+
+    [Inject]
+    SabitHelper sabitHelper { get; set; }
+
+    FaturaRequestDto faturarequest = new FaturaRequestDto();
+    List<ProjeDto> projeler = new();
+    List<SisSabitlerDetayDto> FaturaDurumList = new();
+
+    private IEnumerable<string> options { get; set; } = new HashSet<string>() { "1", "2", "4"};
+
+    // private IEnumerable<SisSabitlerDetayDto> options { get; set; } = new HashSet<SisSabitlerDetayDto>() {
+    //     new SisSabitlerDetayDto() {Ikodu = 1, Adi = "Öneri"},
+    //     new SisSabitlerDetayDto() {Ikodu = 2, Adi = "Onay Sürecinde"},
+    //     new SisSabitlerDetayDto() {Ikodu = 3, Adi = "Onaylandi"},
+    //     new SisSabitlerDetayDto() {Ikodu = 4, Adi = "Karsilaniyor"},
+    //     new SisSabitlerDetayDto() {Ikodu = 7, Adi = "Geri Gönderildi"},
+    // };
+
+    protected override async Task OnInitializedAsync()
+    {
+        projeler = await projeHelper.LoadRecords();
+        FaturaDurumList = await sabitHelper.GetSabitDetay(SabitHelper.SabitTurler.FaturaDurumu);
+
+        if (mainRequest != null)
+            faturarequest = mainRequest;
+    }
+
+    private async Task Tamam()
+    {
+        await ModalInstance.CloseAsync(ModalResult.Ok<FaturaRequestDto>(faturarequest));
+    }
+
+    public async Task Vazgec()
+    {
+        await ModalInstance.CloseAsync();
+    }
+
+    private string GetMultiSelectionText(List<string> selectedValues)
+    {
+        return string.Join(", ", selectedValues.Select(x => x));
+    }
+
+}

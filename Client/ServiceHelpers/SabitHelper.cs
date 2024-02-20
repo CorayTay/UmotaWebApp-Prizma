@@ -19,7 +19,8 @@ namespace UmotaWebApp.Client.ServiceHelpers
             TalepTeslimYeri = 52,
             TalepOnayTuru = 54,
             Birimler = 53,
-            SiparisDurumu = 61
+            SiparisDurumu = 61,
+            FaturaDurumu = 72
         }
 
         protected HttpClient httpClient { get; set; }

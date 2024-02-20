@@ -85,7 +85,7 @@
                             <label>Öncelik</label>
                             <InputSelect class="form-control" @bind-Value="talepFis.Oncelik">
                                 <option value="0">@Utils.Mesajlar.Seciniz</option>
-                                <option value="2" selected>Normal</option>
+                                <option value="2">Normal</option>
                                 <option value="3">Yüksek</option>
                             </InputSelect>
                         </div>
@@ -182,6 +182,7 @@
     TalepFisDto talepFis = new() { Tarih = DateTime.Now, Saat = DateTime.Now, TeslimTarihi = DateTime.Now.AddDays(3)};
     List<SisSabitlerDetayDto> teslimYeriList = new();
     List<SisSabitlerDetayDto> talepTuruList = new();
+    List<SisSabitlerDetayDto> talepDurumList = new();
 
     List<ProjeDto> projeler = new();
 
@@ -255,6 +256,7 @@
             _processing = true;
 
             talepFis.logref = await yetkiHelper.RefNoAl(tableName);
+            await GenerateTalepFisnNo(); // Aynı anda ekleyenler için numara çakışmasın
             talepFis = await mainDataHelper.SaveRecord(talepFis);
 
             Snackbar.Add("Talep oluşturuldu", severity: Severity.Success);
@@ -301,21 +303,11 @@
         return Task.CompletedTask;
     }
 
-    public async Task LogRefUret()
-    {
-        var selectedFirmaDonem = await LocalStorageService.GetItemAsync<SisFirmaDonemDto>(Consts.FirmaDonem);
-        if (selectedFirmaDonem == null)
-            throw new Exception("Firma dönem seçilmedi");
-
-
-        var result2 = await httpClient.GetServiceResponseAsync<int>(UrlHelper.RefNoAl + "?tablename=talepfis&firmaId=" + selectedFirmaDonem.firma_no.Value);
-        talepFis.logref = result2;
-    }
-
     public async Task LoadSelectBoxdata()
     {
         teslimYeriList = await sabitHelper.GetSabitDetay(SabitHelper.SabitTurler.TalepTeslimYeri);
         talepTuruList = await sabitHelper.GetSabitDetay(SabitHelper.SabitTurler.TalepTuru);
+        talepDurumList = await sabitHelper.GetSabitDetay(SabitHelper.SabitTurler.TalepDurumu);
 
 
         projeler = await projeHelper.LoadRecords();
@@ -350,13 +342,21 @@
     {
         IsUpdate = this.logRef.HasValue;
 
-        if (IsUpdate)
-            await LoadTalepFisData();
-
         await LoadSelectBoxdata();
+
+        if (IsUpdate)
+            await LoadData();
+        else
+            await NewRecord();
     }
 
-    private async Task LoadTalepFisData()
+    private async Task NewRecord()
+    {
+        talepFis.Oncelik = 2;
+        talepFis.DurumRef = talepDurumList.FirstOrDefault(x => x.Kodu == "DF").SabitDetayId;
+    }
+
+    private async Task LoadData()
     {
         TalepFisRequestDto talepfisRequest = new();
         talepfisRequest.TalepFis = new TalepFisDto() { logref = this.logRef.Value };

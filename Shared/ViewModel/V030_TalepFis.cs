@@ -48,5 +48,20 @@ namespace UmotaWebApp.Shared
         public string? ProjeSirketKodu { get; set; }
         public string? ProjeSirketAdi { get; set; }
 
+        public string TarihFormatted
+        {
+            get
+            {
+                return this.Tarih.HasValue ? this.Tarih.Value.ToString("dd.MM.yyyy") : "-";
+            }
+        }
+
+        public string TeslimTarihiFormatted
+        {
+            get
+            {
+                return this.TeslimTarihi.HasValue ? this.TeslimTarihi.Value.ToString("dd.MM.yyyy") : "-";
+            }
+        }
     }
 }

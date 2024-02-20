@@ -40,7 +40,7 @@ namespace Prizma.Core.Model
 
         public double? SiraNo { get; private set; }
 
-        public string? Marka { get; set; }
+        public string? Marka { get; private set; }
 
         #endregion
 
@@ -53,7 +53,12 @@ namespace Prizma.Core.Model
                 Aciklama = aciklama,
                 Miktar = miktar,
                 BirimRef = birimRef,
-                Marka = marka
+                Marka = marka,
+                SipMiktar = 0,
+                FisMiktar = 0,
+                PlFisMiktar = 0,
+                PlSipMiktar = miktar,
+                KalanMiktar = miktar
             };
         }
 
@@ -89,6 +94,11 @@ namespace Prizma.Core.Model
         {
             this.KaynakRef = kaynakref;
         }
+        public void ChangeMarka(string marka)
+        {
+            this.Marka = marka;
+        }
+
         public void ChangeInserter(string insuser,DateTime insdate)
         {
             this.insuser = insuser;

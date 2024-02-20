@@ -17,6 +17,8 @@ using Dapper;
 using Microsoft.Data.SqlClient;
 using System.Data;
 using UmotaWebApp.Server.Extensions;
+using System.DirectoryServices;
+using static MudBlazor.CategoryTypes;
 
 namespace UmotaWebApp.Server.Services.Infrastructure
 {
@@ -31,6 +33,44 @@ namespace UmotaWebApp.Server.Services.Infrastructure
             Mapper = mapper;
             MasterDbContext = masterDbContext;
             Configuration = configuration;
+        }
+
+        public string DirectoryEntryPath
+        {
+            get
+            {
+                string domainName = Configuration["DomainName"];
+                string[] sCollection = domainName.Split('.');
+                string path = "LDAP://";
+                for (int i = 0; i < sCollection.Length; i++)
+                {
+                    path += "DC=" + sCollection[i] + ",";
+                }
+                path = path.Substring(0, path.Length - 1);
+                return path;
+            }
+        }
+
+        private bool AuthenticateUser(string userName, string password)
+        {
+            bool ret = false;
+
+            try
+            {
+                DirectoryEntry de = new DirectoryEntry(DirectoryEntryPath, userName, password);
+                DirectorySearcher dsearch = new DirectorySearcher(de);
+                SearchResult results = null;
+
+                results = dsearch.FindOne();
+
+                ret = true;
+            }
+            catch
+            {
+                ret = false;
+            }
+
+            return ret;
         }
 
         public string SifreDegistir(string sifre)
@@ -98,10 +138,24 @@ namespace UmotaWebApp.Server.Services.Infrastructure
 
         public async Task<SisKullaniciLoginResponseDto> Login(SisKullaniciLoginRequestDto request)
         {
-            var hashedPassword = SifreDegistir(request.Sifre);
+            var kullanici = new SisKullaniciDto();
+            var AuthenticationType = Configuration["AuthenticationType"];
+            if (AuthenticationType == "DirectoryServices")
+            {
+                if (AuthenticateUser(request.Kod, request.Sifre))
+                    kullanici = await MasterDbContext.SisKullanicis.Where(x => x.KullaniciKodu == request.Kod)
+                      .ProjectTo<SisKullaniciDto>(Mapper.ConfigurationProvider).FirstOrDefaultAsync();
+                else
+                    throw new Exception("Kullanıcı kodu ve/veya şifre hatalı girildi.");
 
-            var kullanici = await MasterDbContext.SisKullanicis.Where(x => x.KullaniciKodu == request.Kod && x.KullaniciSifre == hashedPassword)
-              .ProjectTo<SisKullaniciDto>(Mapper.ConfigurationProvider).FirstOrDefaultAsync();
+            }
+            else
+            {
+                var hashedPassword = SifreDegistir(request.Sifre);
+
+                kullanici = await MasterDbContext.SisKullanicis.Where(x => x.KullaniciKodu == request.Kod && x.KullaniciSifre == hashedPassword)
+                  .ProjectTo<SisKullaniciDto>(Mapper.ConfigurationProvider).FirstOrDefaultAsync();
+            }
 
             if (kullanici == null)
                 throw new Exception("Kullanıcı kodu ve/veya şifre hatalı girildi.");
